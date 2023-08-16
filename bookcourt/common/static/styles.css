@@ -49,11 +49,12 @@ body{
     right: 0;
     align-items: center;
     justify-content: center;
-    overflow: scroll;
+    overflow: auto;
     font-family: Courgette;
 }
 .content{
     height: fit-content;
+    overflow: auto;
 }
 .locationdetail{
     margin: auto;
