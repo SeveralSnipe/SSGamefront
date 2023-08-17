@@ -28,7 +28,14 @@
 }
 .homebutton{
     position: absolute;
-    right: 20%;
+    left: 20%;
+}
+.loginoptions{
+    position: absolute;
+    right: 15%;
+    font-family: Courgette;
+    font-weight: 300;
+    font-size: large;
 }
 .homeform{
     display: grid;
@@ -55,7 +62,7 @@ body{
 ul {
     list-style: none;
     padding-left: 0;
-}​
+}
 .content{
     display: flex;
     position: absolute;
