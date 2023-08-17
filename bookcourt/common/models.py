@@ -133,7 +133,7 @@ class OrganizationLocationWorkingDays(models.Model):
             case 'Saturday':
                 return self.is_saturday_workingday
             case 'Sunday':
-                return self.is_monday_workingday
+                return self.is_sunday_workingday
             
 
     # def __str__(self):
