@@ -1,34 +1,39 @@
 {% extends 'home.html' %}
 {% block content %}
 <div class="locationdetail">
-    <h2 style="font-size: larger;">{{org}} : {{game}}</h2>
-    <h3 style="font-size: large;">{{area}}</h3>
-    <p>Address: {{address}}</p>
-    <p>Phone Number: {{contact}}</p>
-    <p>Pricing: {{pricing}}</p>
-    <div class="amenities">
-        <h2 style="font-size: small;">Amenities:</h2>
-        <ul style="font-size: x-small;">
-            <li>Parking: {{parking}}</li>
-            <li>Restrooms: {{restrooms}}</li>
-            <li>Changerooms: {{changerooms}}</li>
-            <li>Power backup: {{powerbackup}}</li>
-            <li>Beverages: {{beverages}}</li>
-            <li>Coaching: {{coaching}}</li>
-        </ul>
-        <p>{{description}}</p>
+    <div class="coredetails">
+        <h2 style="font-size: larger;">{{org}} : {{game}}</h2>
+        <h3 style="font-size: large;">{{area}}</h3>
+        <p>Address: {{address}}</p>
+        <p>Phone Number: {{contact}}</p>
+        <p>Pricing: {{pricing}}</p>
+        <a href="{% url 'placeholder' %}" class="btn btn-outline-primary">Book Now</a>
     </div>
-    <div class="working">
-        <h2 style="font-size: small;">Working days:</h2>
-        <ul style="font-size: x-small;">
-            <li>Monday: {{monday}}</li>
-            <li>Tuesday: {{tuesday}}</li>
-            <li>Wednesday: {{wednesday}}</li>
-            <li>Thursday: {{thursday}}</li>
-            <li>Friday: {{friday}}</li>
-            <li>Saturday: {{saturday}}</li>
-            <li>Sunday: {{sunday}}</li>
-        </ul>
+    <div class="noncoredetails">
+        <div class="amenities">
+            <h2 style="font-size: small;">Amenities:</h2>
+            <ul style="font-size: x-small;">
+                <li>Parking: {{parking}}</li>
+                <li>Restrooms: {{restrooms}}</li>
+                <li>Changerooms: {{changerooms}}</li>
+                <li>Power backup: {{powerbackup}}</li>
+                <li>Beverages: {{beverages}}</li>
+                <li>Coaching: {{coaching}}</li>
+            </ul>
+            <p>{{description}}</p>
+        </div>
+        <div class="working">
+            <h2 style="font-size: small;">Working days:</h2>
+            <ul style="font-size: x-small;">
+                <li>Monday: {{monday}}</li>
+                <li>Tuesday: {{tuesday}}</li>
+                <li>Wednesday: {{wednesday}}</li>
+                <li>Thursday: {{thursday}}</li>
+                <li>Friday: {{friday}}</li>
+                <li>Saturday: {{saturday}}</li>
+                <li>Sunday: {{sunday}}</li>
+            </ul>
+        </div>
     </div>
     <a href="{% url 'locationsdisplay' %}" class="btn btn-outline-primary">Go back</a>
 </div>

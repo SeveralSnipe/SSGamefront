@@ -85,7 +85,7 @@ class GameType(models.Model):
     #     return self.name
 
 class OrganizationLocationAmenities(models.Model):
-    organization_location=models.ForeignKey(OrganizationLocation, on_delete=models.PROTECT)
+    organization_location=models.OneToOneField(OrganizationLocation, on_delete=models.PROTECT)
     is_parking=models.BooleanField(default=False)
     is_restrooms=models.BooleanField(default=False)
     is_changerooms=models.BooleanField(default=False)
@@ -109,7 +109,7 @@ class OrganizationLocationGameType(models.Model):
     #     return self.org_loc_id.org_id.name+self.game_type.name
     
 class OrganizationLocationWorkingDays(models.Model):
-    organization=models.ForeignKey(OrganizationLocation, on_delete=models.PROTECT)
+    organization=models.OneToOneField(OrganizationLocation, on_delete=models.PROTECT)
     is_monday_workingday = models.BooleanField(default=True)
     is_tuesday_workingday = models.BooleanField(default=True)
     is_wednesday_workingday = models.BooleanField(default=True)

@@ -23,7 +23,6 @@
     justify-content: center;
     font-family: Vina Sans;
     font-size: xx-large;
-    box-shadow: 50%;
     z-index: 99;
 }
 .homebutton{
@@ -75,6 +74,26 @@ ul {
 }
 .locationdetail{
     margin: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.coredetails{
+    display: flex;
+    position: absolute;
+    left: 10%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.noncoredetails{
+    display: flex;
+    position: absolute;
+    right: 15%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 .optionbox{
     margin: auto;
@@ -82,6 +101,10 @@ ul {
     justify-content: center;
     align-items: center;
     border: 2px solid burlywood;
+}
+.locationdetail > .btn.btn-outline-primary{
+    position: absolute;
+    bottom: 10%;
 }
 .btn.btn-outline-primary{
     display: flex;
