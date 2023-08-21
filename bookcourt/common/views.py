@@ -1,8 +1,9 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.views.generic import FormView
-from .forms import HomeForm
-from .models import OrganizationLocationAmenities, OrganizationLocationGameType, OrganizationLocation, Organization, OrganizationLocationWorkingDays, GameType
+from django.urls import reverse_lazy
+from django.views.generic import FormView, CreateView
+from .forms import CustomUserCreationForm, HomeForm, OrganizationProfileForm
+from .models import OrganizationLocationAmenities, OrganizationLocationGameType, OrganizationLocation, Organization, OrganizationLocationWorkingDays, GameType, Tenant, TestOrganization
 # Create your views here.
 class HomeForm(FormView):
     form_class=HomeForm
@@ -69,4 +70,29 @@ def locationdetail(request):
                   'sunday':('No','Yes')[workingobj.is_sunday_workingday],
                 }
     return render(request, 'locationdetail.html', context=context_dict)
+class CreateUserProfileView(CreateView):
+    model = TestOrganization
+    form_class = OrganizationProfileForm
+    user_form_class = CustomUserCreationForm
+    template_name = 'neworg.html'
+    success_url = reverse_lazy('placeholder')
+
+    def get(self, request):
+        profile_form = self.form_class()
+        user_form = self.user_form_class()
+        return render(request, self.template_name, {'profile_form': profile_form, 'user_form': user_form})
+
+    def post(self, request):
+        profile_form = self.form_class(request.POST)
+        user_form = self.user_form_class(request.POST)
+        if all([profile_form.is_valid(), user_form.is_valid()]):
+            user = user_form.save()
+            profile = profile_form.save(commit=False)
+            profile.user = user
+            profile.tenant=Tenant.objects.get(id=2)
+            profile.save()
+        else:
+            return render(request, self.template_name, {'profile_form': profile_form, 'user_form': user_form})
+
+        return HttpResponseRedirect(self.success_url)
 
