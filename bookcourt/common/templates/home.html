@@ -1,13 +1,18 @@
 {% extends 'base.html' %}
+{% load has_group %}
 {% block content %}
 <div class="home">
+    {% if request.user|has_group:"Organization" %}
+    <h1>Signed in as Organization</h1>
+    {% else %}
     <h1>Welcome to Gamefront</h1>
-        <form action="" method="post" class="homeform">
-            {% csrf_token %}
-            <table>
-                {{ form.as_table }}
-            </table>
-            <input type="submit" value="Submit" class="btn btn-outline-primary">
-        </form>
+    <form action="" method="post" class="homeform">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <input type="submit" value="Submit" class="btn btn-outline-primary">
+    </form>
+    {% endif %}
 </div>
 {% endblock %}

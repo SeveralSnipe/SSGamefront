@@ -68,6 +68,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries':{
+                'has_group': 'common.templatetags.templatetags',
+                }
+            
         },
     },
 ]
@@ -120,7 +124,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-LOGIN_URL = '/login/'
+LOGIN_URL = 'login'
 
 
 # Static files (CSS, JavaScript, Images)

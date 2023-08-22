@@ -155,7 +155,7 @@ class TestCustomer(models.Model):
 class TestOrganization(models.Model):
     user=models.OneToOneField(User, on_delete=models.PROTECT, primary_key=True)
     tenant=models.ForeignKey(Tenant, on_delete=models.PROTECT)
-    organization_name=models.CharField(max_length=100)
+    organization_name=models.CharField(max_length=100, default="No Organization name set")
     phone_number=models.PositiveBigIntegerField(default=None)
     description=models.TextField(max_length=None, default="No Description set")
     is_terms_and_conditions_agreed=models.BooleanField(default=False)

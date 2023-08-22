@@ -2,6 +2,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import FormView, CreateView
+from django.contrib.auth.views import LoginView
+from django.contrib.auth.models import Group
+from django.contrib import messages
 from .forms import CustomUserCreationForm, HomeForm, OrganizationProfileForm
 from .models import OrganizationLocationAmenities, OrganizationLocationGameType, OrganizationLocation, Organization, OrganizationLocationWorkingDays, GameType, Tenant, TestOrganization
 # Create your views here.
@@ -86,7 +89,9 @@ class CreateUserProfileView(CreateView):
         profile_form = self.form_class(request.POST)
         user_form = self.user_form_class(request.POST)
         if all([profile_form.is_valid(), user_form.is_valid()]):
-            user = user_form.save()
+            user = user_form.save(commit=False)
+            user.groups.add(Group.objects.get(name="Organization"))
+            user.save()
             profile = profile_form.save(commit=False)
             profile.user = user
             profile.tenant=Tenant.objects.get(id=2)
@@ -95,4 +100,15 @@ class CreateUserProfileView(CreateView):
             return render(request, self.template_name, {'profile_form': profile_form, 'user_form': user_form})
 
         return HttpResponseRedirect(self.success_url)
+
+class MyLoginView(LoginView):
+    #redirect_authenticated_user = True
+    template_name='login.html'
+    
+    def get_success_url(self):
+        return reverse_lazy('home') 
+    
+    def form_invalid(self, form):
+        messages.error(self.request,'Invalid username or password')
+        return self.render_to_response(self.get_context_data(form=form))
 
