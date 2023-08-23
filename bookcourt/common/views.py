@@ -6,7 +6,7 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import Group
 from django.contrib import messages
 from .forms import CustomUserCreationForm, HomeForm, OrganizationProfileForm
-from .models import OrganizationLocationAmenities, OrganizationLocationGameType, OrganizationLocation, Organization, OrganizationLocationWorkingDays, GameType, Tenant, TestOrganization
+from .models import OrganizationLocationAmenities, OrganizationLocationGameType, OrganizationLocation, Organization, OrganizationLocationWorkingDays, GameType, Tenant
 # Create your views here.
 class HomeForm(FormView):
     form_class=HomeForm
@@ -74,7 +74,7 @@ def locationdetail(request):
                 }
     return render(request, 'locationdetail.html', context=context_dict)
 class CreateUserProfileView(CreateView):
-    model = TestOrganization
+    #model = TestOrganization
     form_class = OrganizationProfileForm
     user_form_class = CustomUserCreationForm
     template_name = 'neworg.html'

@@ -1,6 +1,6 @@
 from django import forms
 from django.db.models.base import Model
-from .models import GameType, LocationArea, TestOrganization
+from .models import GameType
 from django.forms import SelectDateWidget, ModelChoiceField, ValidationError
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -13,7 +13,7 @@ class LocationFormChoiceField(ModelChoiceField):
         return obj.area
 class HomeForm(forms.Form):
     game=HomeFormChoiceField(queryset=GameType.objects.filter(is_active=True), label='Select Gametype')
-    location=LocationFormChoiceField(queryset=LocationArea.objects.filter(is_active=True), label='Select Area')
+    #location=LocationFormChoiceField(queryset=LocationArea.objects.filter(is_active=True), label='Select Area')
     date=forms.DateField(widget=SelectDateWidget(),label='Select Date')
 
 class CustomUserCreationForm(UserCreationForm):  
@@ -49,7 +49,7 @@ class CustomUserCreationForm(UserCreationForm):
         return user
 class OrganizationProfileForm(forms.ModelForm):
     class Meta:
-        model= TestOrganization
+        #model= TestOrganization
         fields=["phone_number"]
 
 
