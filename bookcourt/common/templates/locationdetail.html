@@ -22,7 +22,7 @@
             </ul>
             <p>{{description}}</p>
         </div>
-        <div class="working">
+        <!-- <div class="working">
             <h2 style="font-size: small;">Working days:</h2>
             <ul style="font-size: x-small;">
                 <li>Monday: {{monday}}</li>
@@ -32,6 +32,18 @@
                 <li>Friday: {{friday}}</li>
                 <li>Saturday: {{saturday}}</li>
                 <li>Sunday: {{sunday}}</li>
+            </ul>
+        </div> -->
+        <div class="working">
+            <h2 style="font-size: small;">Working time:</h2>
+            <ul style="font-size: x-small;">
+                <li>Monday: {{monday.start}} - {{monday.end}}</li>
+                <li>Tuesday: {{tuesday.start}} - {{tuesday.end}}</li>
+                <li>Wednesday: {{wednesday.start}} - {{wednesday.end}}</li>
+                <li>Thursday: {{thursday.start}} - {{thursday.end}}</li>
+                <li>Friday: {{friday.start}} - {{friday.end}}</li>
+                <li>Saturday: {{saturday.start}} - {{saturday.end}}</li>
+                <li>Sunday: {{sunday.start}} - {{sunday.end}}</li>
             </ul>
         </div>
     </div>

@@ -1,20 +1,47 @@
 from django import forms
 from django.db.models.base import Model
-from .models import GameType
+from .models import *
 from django.forms import SelectDateWidget, ModelChoiceField, ValidationError
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from smart_selects.form_fields import ChainedModelChoiceField
 
 class HomeFormChoiceField(ModelChoiceField):
     def label_from_instance(self, obj):
-        return obj.name
-class LocationFormChoiceField(ModelChoiceField):
+        return obj.game_name
+class CountryFormChoiceField(ModelChoiceField):
     def label_from_instance(self, obj):
-        return obj.area
+        return obj.country_name
+
+class StateFormChoiceField(ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.state_name
+
+class CityFormChoiceField(ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.city_name
+
+class AreaFormChoiceField(ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.area_name
 class HomeForm(forms.Form):
     game=HomeFormChoiceField(queryset=GameType.objects.filter(is_active=True), label='Select Gametype')
-    #location=LocationFormChoiceField(queryset=LocationArea.objects.filter(is_active=True), label='Select Area')
-    date=forms.DateField(widget=SelectDateWidget(),label='Select Date')
+    country_name=CountryFormChoiceField(queryset=Country.objects.filter(is_active=True), label='Select Country')
+    state_name=ChainedModelChoiceField('common','State','country_name','country_name','common','Country','country_name',show_all=False,auto_choose=False)
+    city_name=ChainedModelChoiceField('common','City','state_name','state_name','common','State','state_name',show_all=False,auto_choose=False)
+    area_name=ChainedModelChoiceField('common','Area','city_name','city_name','common','City','city_name',show_all=False,auto_choose=False)
+    #date=forms.DateField(widget=SelectDateWidget(),label='Select Date')
+# class SearchForm(forms.ModelForm):
+#     game=HomeFormChoiceField(queryset=GameType.objects.filter(is_active=True), label='Select Gametype')
+#     #date=forms.DateField(widget=SelectDateWidget(),label='Select Date')
+#     class Meta:
+#         model=OrganizationLocation
+#         fields=['country_name','state_name','city_name','area_name']
+
+class TempForm(forms.Form):
+    game=HomeFormChoiceField(queryset=GameType.objects.filter(is_active=True), label='Select Gametype')
+    area=AreaFormChoiceField(queryset=Area.objects.filter(is_active=True), label='Select Area')
+
 
 class CustomUserCreationForm(UserCreationForm):  
     username = forms.CharField(label='Organization Name', min_length=5, max_length=150)
@@ -49,7 +76,7 @@ class CustomUserCreationForm(UserCreationForm):
         return user
 class OrganizationProfileForm(forms.ModelForm):
     class Meta:
-        #model= TestOrganization
+        model= Organization
         fields=["phone_number"]
 
 

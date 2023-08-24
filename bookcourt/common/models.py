@@ -4,6 +4,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 from booking.models import *
+from smart_selects.db_fields import ChainedForeignKey
 #from location_field.models.plain import LocationField
 
 
@@ -242,7 +243,7 @@ from booking.models import *
 
 #MODEL REVISION 23/8/23
 class Tenant(models.Model):
-    name=models.CharField(max_length=100)
+    tenant_name=models.CharField(max_length=100)
     sign_up_terms_and_conditions=models.TextField()
     booking_terms_and_conditions=models.TextField()
     
@@ -261,26 +262,26 @@ class Customer(models.Model):
 
 class Country(models.Model):
     tenant = models.ForeignKey(Tenant, on_delete=models.PROTECT)
-    name=models.CharField(max_length=50)
+    country_name=models.CharField(max_length=50)
     is_active=models.BooleanField(default=True)
     
 class State(models.Model):
     country=models.ForeignKey(Country, on_delete=models.CASCADE)
-    name=models.CharField(max_length=50)
+    state_name=models.CharField(max_length=50)
     is_active=models.BooleanField(default=True)
 
 class City(models.Model):
     state=models.ForeignKey(State, on_delete=models.CASCADE)
-    name=models.CharField(max_length=50)
+    city_name=models.CharField(max_length=50)
     is_active=models.BooleanField(default=True)
 
 class Area(models.Model):
     city=models.ForeignKey(City, on_delete=models.CASCADE)
-    name=models.CharField(max_length=50)
+    area_name=models.CharField(max_length=50)
     is_active=models.BooleanField(default=True)
     
 class GameType(models.Model):
-    name=models.CharField(max_length=100)
+    game_name=models.CharField(max_length=100)
     is_active=models.BooleanField(default=True)
 
 class Organization(models.Model):
@@ -311,7 +312,7 @@ class OrganizationLocation(models.Model):
     #location_in_map = models.LocationField(based_fields=['location_from_map'], zoom=7)
     address_line_1=models.TextField()
     address_line_2=models.TextField()
-    area=models.ForeignKey(Area, on_delete=models.PROTECT)
+    area=models.ForeignKey(Area, on_delete=models.PROTECT, null=True)
     pincode=models.IntegerField()
     phone_number=models.PositiveBigIntegerField()
     join_date = models.DateField(null=True, blank=True)
