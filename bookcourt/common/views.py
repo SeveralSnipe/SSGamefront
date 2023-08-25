@@ -2,6 +2,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import FormView, CreateView
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import Group
 from django.contrib import messages
@@ -106,13 +109,20 @@ class CreateUserProfileView(CreateView):
         profile_form = self.form_class(request.POST)
         user_form = self.user_form_class(request.POST)
         if all([profile_form.is_valid(), user_form.is_valid()]):
-            user = user_form.save(commit=False)
+            random_password=user_form.generate_temp_password()
+            user = user_form.save(random_password, commit=False)
             user.groups.add(Group.objects.get(name="Organization"))
             user.save()
             profile = profile_form.save(commit=False)
             profile.user = user
             profile.tenant=Tenant.objects.get(id=1)
             profile.save()
+            current_site = get_current_site(self.request)
+            subject = 'Welcome to Our Website'
+            message = render_to_string('registration/signup_email.html', {'user': user,'domain': current_site.domain, 'temppwd': random_password})
+            from_email = 'testgamefront@gmail.com'
+            recipient_list = [user.email]
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
         else:
             return render(request, self.template_name, {'profile_form': profile_form, 'user_form': user_form})
 

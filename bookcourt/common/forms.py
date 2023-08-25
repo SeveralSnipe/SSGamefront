@@ -5,6 +5,8 @@ from django.forms import SelectDateWidget, ModelChoiceField, ValidationError
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from smart_selects.form_fields import ChainedModelChoiceField
+import string
+import random
 
 class HomeFormChoiceField(ModelChoiceField):
     def label_from_instance(self, obj):
@@ -43,20 +45,24 @@ class TempForm(forms.Form):
     area=AreaFormChoiceField(queryset=Area.objects.filter(is_active=True), label='Select Area')
 
 
-class CustomUserCreationForm(UserCreationForm):  
-    username = forms.CharField(label='Organization Name', min_length=5, max_length=150)
+class CustomUserCreationForm(forms.Form):  
+    #username = forms.CharField(label='Organization Name', min_length=5, max_length=150)
     first_name= forms.CharField(max_length=150)
     last_name = forms.CharField(max_length=150)  
     email = forms.EmailField(label='Organization Email')  
-    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)  
-    password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)  
+    # password1 = forms.CharField(label='Password', widget=forms.PasswordInput)  
+    # password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)  
   
-    def username_clean(self):  
-        username = self.cleaned_data['username'].lower()  
-        new = User.objects.filter(username = username)  
-        if new.count():  
-            raise ValidationError("User Already Exist")  
-        return username  
+    def generate_temp_password(request):
+        password = User.objects.make_random_password(length=6, allowed_chars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        return password
+
+    # def username_clean(self):  
+    #     username = self.cleaned_data['username'].lower()  
+    #     new = User.objects.filter(username = username)  
+    #     if new.count():  
+    #         raise ValidationError("User Already Exist")  
+    #     return username  
   
     def email_clean(self):  
         email = self.cleaned_data['email'].lower()  
@@ -65,11 +71,11 @@ class CustomUserCreationForm(UserCreationForm):
             raise ValidationError(" Email Already Exist")  
         return email    
   
-    def save(self, commit = True):  
+    def save(self, pwd, commit = True,): 
         user = User.objects.create_user(  
-            self.cleaned_data['username'],  
             self.cleaned_data['email'],  
-            self.cleaned_data['password1'],
+            self.cleaned_data['email'],  
+            pwd,
             first_name=self.cleaned_data['first_name'],
             last_name=self.cleaned_data['last_name']
         )
@@ -77,6 +83,6 @@ class CustomUserCreationForm(UserCreationForm):
 class OrganizationProfileForm(forms.ModelForm):
     class Meta:
         model= Organization
-        fields=["phone_number"]
+        fields=["organization_name","phone_number"]
 
 

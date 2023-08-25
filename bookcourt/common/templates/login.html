@@ -2,7 +2,7 @@
 
 {%block content%}
   <div class="center">
-	  <form method="post" class="card" novalidate>
+	  <form action= "" method="post">
 	  	{% csrf_token %}
 	    <h2 class="text-center">Log in to your account</h2>
 		{% for field in form %}

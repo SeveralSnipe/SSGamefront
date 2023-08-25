@@ -247,12 +247,17 @@ class Tenant(models.Model):
     sign_up_terms_and_conditions=models.TextField()
     booking_terms_and_conditions=models.TextField()
     
+    def __str__(self):
+        return self.tenant_name
+    
 class TenantUser(models.Model):
     tenant = models.ForeignKey(Tenant, on_delete=models.PROTECT)
     user=models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     is_active=models.BooleanField(default=True)
-
     
+    def __str__(self):
+        return self.user.username
+
 class Customer(models.Model):
     user=models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     tenant = models.ForeignKey(Tenant, on_delete=models.PROTECT)
@@ -260,29 +265,50 @@ class Customer(models.Model):
     is_active=models.BooleanField(default=True)    
 	#organization_membership_mapping = models.ManytoManyField( , through='CustomerOrganizationMapping')
 
+    def __str__(self):
+        return self.user.username
+
+
 class Country(models.Model):
     tenant = models.ForeignKey(Tenant, on_delete=models.PROTECT)
     country_name=models.CharField(max_length=50)
     is_active=models.BooleanField(default=True)
     
+    def __str__(self):
+        return self.country_name
+
 class State(models.Model):
     country=models.ForeignKey(Country, on_delete=models.CASCADE)
     state_name=models.CharField(max_length=50)
     is_active=models.BooleanField(default=True)
+    
+    def __str__(self):
+        return self.state_name
+
 
 class City(models.Model):
     state=models.ForeignKey(State, on_delete=models.CASCADE)
     city_name=models.CharField(max_length=50)
     is_active=models.BooleanField(default=True)
+    
+    def __str__(self):
+        return self.city_name
 
 class Area(models.Model):
     city=models.ForeignKey(City, on_delete=models.CASCADE)
     area_name=models.CharField(max_length=50)
     is_active=models.BooleanField(default=True)
     
+    def __str__(self):
+        return self.area_name
+
+    
 class GameType(models.Model):
     game_name=models.CharField(max_length=100)
     is_active=models.BooleanField(default=True)
+    
+    def __str__(self):
+        return self.game_name
 
 class Organization(models.Model):
     APPROVED = 1
@@ -305,6 +331,8 @@ class Organization(models.Model):
     status=models.IntegerField(choices=status_choices, default= PENDING)
     is_active=models.BooleanField(default=True)
     
+    def __str__(self):
+        return self.user.username
 
 class OrganizationLocation(models.Model):
     organization=models.ForeignKey(Organization, on_delete=models.CASCADE)
@@ -319,7 +347,9 @@ class OrganizationLocation(models.Model):
     created_date_time = models.DateTimeField(auto_now=True)
     is_active=models.BooleanField(default=True)
     
-    
+    # def __str__(self):
+    #     return self.organization.user.username
+  
 class OrganizationLocationAmenities(models.Model):
     organization_location=models.OneToOneField(OrganizationLocation, on_delete=models.CASCADE)
     is_parking=models.BooleanField(default=False)
@@ -330,7 +360,9 @@ class OrganizationLocationAmenities(models.Model):
     is_coaching_facilities=models.BooleanField(default=False)
     description= models.TextField()
     is_active=models.BooleanField(default=True)
-    
+
+    # def __str__(self):
+    #     return self.organization_location__username 
 
 class OrganizationLocationGameType(models.Model):
     organization_location=models.ForeignKey(OrganizationLocation, on_delete=models.CASCADE)
