@@ -19,7 +19,7 @@
             <a href="{% url 'home' %}" class="btn btn-outline-primary"><i class="bi-house"></i></a>
         </div>
         <div class="loginoptions">
-            {% if user.is_authenticated %}<a href="{% url 'logout' %}" style="text-decoration: none; color: black;">Logout</a>{% else %}<a href="{% url 'login' %}" style="text-decoration: none; color: black;">Login</a>/<a href="{% url 'placeholder' %}" style="text-decoration: none; color: black;">Signup</a>/<a href="{% url 'neworg' %}" style="text-decoration: none; color: black;">Work With Us</a>{% endif %}
+            <a href="{% url 'days' %}" style="text-decoration: none; color: black;">Test</a>/{% if user.is_authenticated %}<a href="{% url 'logout' %}" style="text-decoration: none; color: black;">Logout</a>{% else %}<a href="{% url 'login' %}" style="text-decoration: none; color: black;">Login</a>/<a href="{% url 'placeholder' %}" style="text-decoration: none; color: black;">Signup</a>/<a href="{% url 'neworg' %}" style="text-decoration: none; color: black;">Work With Us</a>{% endif %}
         </div>
     </div>
     <div class="content">

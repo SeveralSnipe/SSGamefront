@@ -1,3 +1,4 @@
+from django.forms.models import BaseModelForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -8,8 +9,9 @@ from django.template.loader import render_to_string
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import Group
 from django.contrib import messages
-from .forms import CustomUserCreationForm, HomeForm, OrganizationProfileForm, TempForm
-from .models import Area, OrganizationLocationAmenities, OrganizationLocationGameType, OrganizationLocation, Organization, OrganizationLocationWorkingDays, GameType, Tenant
+from .forms import *
+from .models import *
+from django.forms import formset_factory
 # Create your views here.
 class HomeForm(FormView):
     form_class=TempForm
@@ -56,12 +58,12 @@ def locationdetail(request):
     amenitiesobj=OrganizationLocationAmenities.objects.get(organization_location=locationobj)
     workinglist=[]
     #workingobj=OrganizationLocationWorkingDays.objects.filter(organization=locationobj)
-    for i in range(7):
-        daytimeobj=OrganizationLocationWorkingDays.objects.get(organization_location=locationobj, days=i)
-        startendpair={}
-        startendpair['start']=daytimeobj.work_from_time
-        startendpair['end']=daytimeobj.work_to_time
-        workinglist.append(startendpair)
+    # for i in range(7):
+    #     daytimeobj=OrganizationLocationWorkingDays.objects.get(organization_location=locationobj, days=i)
+    #     startendpair={}
+    #     startendpair['start']=daytimeobj.work_from_time
+    #     startendpair['end']=daytimeobj.work_to_time
+    #     workinglist.append(startendpair)
     #workingobj=OrganizationLocationWorkingDays.objects.get(organization=locationobj)
     print(workinglist)
     context_dict={'org':org,
@@ -139,3 +141,37 @@ class MyLoginView(LoginView):
         messages.error(self.request,'Invalid username or password')
         return self.render_to_response(self.get_context_data(form=form))
 
+class TimingCreate(CreateView):
+    model=OrganizationLocationWorkingTime
+    form_class=TimeForm
+    success_url=reverse_lazy('placeholder')
+    def get(self, request):
+        days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+        TimeFormSet = formset_factory(TimeForm, max_num=7, min_num=7)
+        formset=TimeFormSet(initial=[{'work_day_choices': day} for day in days])
+        return render(request, "days.html", {'formset':formset})
+    
+    def post(self, request):
+        TimeFormSet = formset_factory(TimeForm, max_num=7, min_num=7)
+        formset=TimeFormSet(request.POST, request.FILES)
+        if formset.is_valid():
+            for form in formset:
+                print(form.cleaned_data)
+            return render(request,"placeholder.html",{'formset':formset})
+        print(formset.errors)
+        return render(request, "home.html", {'formset':formset})
+    
+def timingcreate(request):
+    days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+    context ={}
+    TimeFormSet = formset_factory(TimeForm, max_num=7, min_num=7)
+    formset = TimeFormSet(request.POST or None, initial=[{'work_day_choices': day} for day in days])
+    if formset.is_valid():
+        for form in formset:
+            print(form.cleaned_data)
+        return render(request,"placeholder.html",context)
+              
+    context['formset']= formset
+    return render(request, "days.html", context)
+    
+    

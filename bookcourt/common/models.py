@@ -330,6 +330,8 @@ class Organization(models.Model):
     is_terms_and_conditions_agreed=models.BooleanField(default=False)
     status=models.IntegerField(choices=status_choices, default= PENDING)
     is_active=models.BooleanField(default=True)
+    created_date=models.DateField(auto_now=True)
+    approved_date=models.DateField(null=True,blank=True)
     
     def __str__(self):
         return self.user.username
@@ -372,8 +374,7 @@ class OrganizationLocationGameType(models.Model):
     description=models.TextField()
     is_active=models.BooleanField(default=True)
     
-
-class OrganizationLocationWorkingDays(models.Model):
+class OrganizationLocationWorkingTime(models.Model):
     SUNDAY = 0
     MONDAY = 1
     TUESDAY = 2
@@ -382,19 +383,90 @@ class OrganizationLocationWorkingDays(models.Model):
     FRIDAY = 5
     SATURDAY = 6
     day_choices = (
-        (SUNDAY, 'Sunday'),
-        (MONDAY, 'Monday'),
-        (TUESDAY, 'Tuesday'),
-        (WEDNESDAY, 'Wednesday'),
-        (THURSDAY, 'Thursday'),
-        (FRIDAY, 'Friday'),
-        (SATURDAY, 'Saturday'),
+        ('Sunday', 'Sunday'),
+        ('Monday', 'Monday'),
+        ('Tuesday', 'Tuesday'),
+        ('Wednesday', 'Wednesday'),
+        ('Thursday', 'Thursday'),
+        ('Friday', 'Friday'),
+        ('Saturday', 'Saturday'),
         )
-    organization_location=models.ForeignKey(OrganizationLocation, on_delete=models.CASCADE)
-    days=models.IntegerField(choices=day_choices)
-    work_from_time=models.TimeField()
-    work_to_time=models.TimeField()
+    organization_location= models.ForeignKey(OrganizationLocation, on_delete=models.CASCADE)
+    work_day_choices=models.CharField(max_length=10, choices= day_choices)
+    from_time=models.TimeField()
+    to_time=models.TimeField()
     is_active=models.BooleanField(default=True)
+
+# class OrganizationLocationWorkingDays(models.Model):
+#     SUNDAY = 0
+#     MONDAY = 1
+#     TUESDAY = 2
+#     WEDNESDAY = 3
+#     THURSDAY = 4
+#     FRIDAY = 5
+#     SATURDAY = 6
+#     day_choices = (
+#         (SUNDAY, 'Sunday'),
+#         (MONDAY, 'Monday'),
+#         (TUESDAY, 'Tuesday'),
+#         (WEDNESDAY, 'Wednesday'),
+#         (THURSDAY, 'Thursday'),
+#         (FRIDAY, 'Friday'),
+#         (SATURDAY, 'Saturday'),
+#         )
+#     organization_location=models.ForeignKey(OrganizationLocation, on_delete=models.CASCADE)
+#     days=models.IntegerField(choices=day_choices)
+#     work_from_time=models.TimeField()
+#     work_to_time=models.TimeField()
+#     is_active=models.BooleanField(default=True)
+
+# class OrganizationLocationWorkingTime(models.Model):
+#     organization=models.ForeignKey(OrganizationLocation, on_delete=models.CASCADE)
+#     primary_from_time=models.TimeField()
+#     primary_to_time=models.TimeField()
+#     secondary_from_time=models.TimeField(null=True,blank=True)
+#     secondary_to_time=models.TimeField(null=True,blank=True)
+    
+#     def stringify_time(self, choice):
+#         if choice==1:
+#             return self.primary_from_time+'-'+self.primary_to_time
+#         else:
+#             return self.secondary_from_time+'-'+self.secondary_to_time
+   
+# class OrganizationLocationWorkingDay(models.Model):
+#     SUNDAY = 0
+#     MONDAY = 1
+#     TUESDAY = 2
+#     WEDNESDAY = 3
+#     THURSDAY = 4
+#     FRIDAY = 5
+#     SATURDAY = 6
+#     day_choices = (
+#         (SUNDAY, 'Sunday'),
+#         (MONDAY, 'Monday'),
+#         (TUESDAY, 'Tuesday'),
+#         (WEDNESDAY, 'Wednesday'),
+#         (THURSDAY, 'Thursday'),
+#         (FRIDAY, 'Friday'),
+#         (SATURDAY, 'Saturday'),
+#         )
+#     # PRIMARY = 0
+#     # SECONDARY = 1
+#     # time_choices = (
+#     #     (PRIMARY, 'Primary Time Slot'),
+#     #     (SECONDARY, 'Secondary Time Slot')
+#     # )
+    
+#     workingtimes=models.ForeignKey(OrganizationLocationWorkingTime, on_delete=models.CASCADE)
+#     day=models.IntegerField(choices=day_choices)
+#     timing=models.BooleanField()
+#     # def get_times(self):
+#     #     return (
+#     #         (1, self.workingtimes.stringify(1)),
+#     #         (2, self.workingtimes.stringify(2)),
+#     #         )
+    
+    
     
     
 class OrganizationGameImages(models.Model):

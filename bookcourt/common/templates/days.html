@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="form">
+    <h1>Fill the necessary details</h1>
+        <form action="" method="post" class="homeform" enctype="multipart/form-data">
+            {{ formset.management_form }}
+            {% csrf_token %}
+            <table>
+                {% for form in formset %}
+                {{form}}
+                {% endfor %}
+            <input type="submit" value="Submit" class="btn btn-outline-primary">
+        </form>
+</div>
+{% endblock %}

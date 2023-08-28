@@ -84,5 +84,40 @@ class OrganizationProfileForm(forms.ModelForm):
     class Meta:
         model= Organization
         fields=["organization_name","phone_number"]
+        
+class TimeForm(forms.ModelForm):
+    class Meta:
+        model=OrganizationLocationWorkingTime
+        fields=['is_active','work_day_choices','from_time','to_time']
+        widgets={
+            'work_day_choices':forms.TextInput(attrs={'disabled':True, 'required': False}),
+            'from_time': forms.TimeInput(attrs={'type':'time', 'required': False}),
+            'to_time': forms.TimeInput(attrs={'type':'time', 'required': False}),
+        }
+        labels={
+            'is_active':'Working',
+            'work_day_choices':'Day',
+            'from_time':'From',
+            'to_time':'To',
+        }
+    def clean_from_time(self):
+        from_time=self.cleaned_data['from_time']
+        is_active=self.cleaned_data['is_active']
+        if(is_active):
+            if(from_time==None):
+                raise ValidationError("You must enter timings for active days.")
+        else:
+            return None
+        return from_time
+    def clean_to_time(self):
+        to_time=self.cleaned_data['to_time']
+        is_active=self.cleaned_data['is_active']
+        if(is_active):
+            if(to_time==None):
+                raise ValidationError("You must enter timings for active days.")
+        else:
+            return None
+        return to_time
+        
 
 
