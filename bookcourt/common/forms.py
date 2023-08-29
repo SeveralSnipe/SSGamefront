@@ -100,24 +100,58 @@ class TimeForm(forms.ModelForm):
             'from_time':'From',
             'to_time':'To',
         }
-    def clean_from_time(self):
-        from_time=self.cleaned_data['from_time']
-        is_active=self.cleaned_data['is_active']
-        if(is_active):
-            if(from_time==None):
-                raise ValidationError("You must enter timings for active days.")
-        else:
-            return None
-        return from_time
-    def clean_to_time(self):
-        to_time=self.cleaned_data['to_time']
-        is_active=self.cleaned_data['is_active']
-        if(is_active):
-            if(to_time==None):
-                raise ValidationError("You must enter timings for active days.")
-        else:
-            return None
-        return to_time
+        required={
+            'is_active',
+            'work_day_choices',
+        }
         
+    def clean(self):
+        from_time=self.cleaned_data.get('from_time')
+        to_time=self.cleaned_data.get('to_time')
+        is_active=self.cleaned_data.get('is_active')
+        if(is_active):
+            if(from_time==None or to_time==None):
+                raise ValidationError("You must enter timings for active days.")
+        return
 
 
+    # def clean_from_time(self):
+    #     from_time=self.cleaned_data['from_time']
+    #     is_active=self.cleaned_data['is_active']
+    #     if(is_active):
+    #         if(from_time==None):
+    #             raise ValidationError("You must enter timings for active days.")
+    #     else:
+    #         return None
+    #     return from_time
+    # def clean_to_time(self):
+    #     to_time=self.cleaned_data['to_time']
+    #     is_active=self.cleaned_data['is_active']
+    #     if(is_active):
+    #         if(to_time==None):
+    #             raise ValidationError("You must enter timings for active days.")
+    #     else:
+    #         return None
+    #     return to_time
+        
+class OrganizationProfileForm(forms.ModelForm):
+    class Meta:
+        model = Organization
+        fields=['organization_name','phone_number','alt_number','description']
+
+class LocationForm(forms.ModelForm):
+    class Meta:
+        model = OrganizationLocation
+        fields=['address_line_1','address_line_2','area','pincode','phone_number']
+
+class AmenitiesForm(forms.ModelForm):
+    class Meta:
+        model = OrganizationLocationAmenities
+        exclude = ('organization_location','is_active',)
+
+class GameTypeForm(forms.ModelForm):
+    
+    class Meta:
+        model = OrganizationLocationGameType
+        exclude = ('organization_location','is_active',)
+        

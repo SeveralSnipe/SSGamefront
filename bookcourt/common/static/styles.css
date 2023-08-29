@@ -46,6 +46,17 @@
     display: block;
     margin-bottom: 20px; 
 }
+.home{
+    display: flex;
+    position: absolute;
+    margin-top: 20vh;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    align-items: center;
+    justify-content: center;
+}
 body{
     background-color: aqua;
     display: flex;

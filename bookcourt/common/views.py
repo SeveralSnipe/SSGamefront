@@ -1,8 +1,10 @@
+from typing import Any
+from django.db.models.query import QuerySet
 from django.forms.models import BaseModelForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse_lazy
-from django.views.generic import FormView, CreateView
+from django.urls import reverse, reverse_lazy
+from django.views.generic import FormView, CreateView, View, UpdateView, ListView
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -11,7 +13,7 @@ from django.contrib.auth.models import Group
 from django.contrib import messages
 from .forms import *
 from .models import *
-from django.forms import formset_factory
+from django.forms import formset_factory, inlineformset_factory
 # Create your views here.
 class HomeForm(FormView):
     form_class=TempForm
@@ -141,25 +143,37 @@ class MyLoginView(LoginView):
         messages.error(self.request,'Invalid username or password')
         return self.render_to_response(self.get_context_data(form=form))
 
-class TimingCreate(CreateView):
+class TimingCreate(View):
     model=OrganizationLocationWorkingTime
+    template_name='days.html'
     form_class=TimeForm
     success_url=reverse_lazy('placeholder')
     def get(self, request):
-        days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+        days=('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')
+        print('entered get')
         TimeFormSet = formset_factory(TimeForm, max_num=7, min_num=7)
         formset=TimeFormSet(initial=[{'work_day_choices': day} for day in days])
-        return render(request, "days.html", {'formset':formset})
+        return render(request, self.template_name, {'formset':formset, 'days':days})
     
     def post(self, request):
+        days=('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')
         TimeFormSet = formset_factory(TimeForm, max_num=7, min_num=7)
-        formset=TimeFormSet(request.POST, request.FILES)
+        formset=TimeFormSet(request.POST, initial=[{'work_day_choices':day} for day in days])
+        ctr=0
+
+        print('This is the formset: ')
+        ctr=0
         if formset.is_valid():
+            pk=self.request.session.get('loc_pk')
             for form in formset:
-                print(form.cleaned_data)
+                form.cleaned_data['work_day_choices']=days[ctr]
+                ctr+=1
+                form=form.cleaned_data
+                dayobj=OrganizationLocationWorkingTime.objects.create(is_active=form['is_active'], work_day_choices=form['work_day_choices'],from_time=form['from_time'],to_time=form['to_time'],organization_location=OrganizationLocation.objects.get(pk=pk))
+                dayobj.save()
             return render(request,"placeholder.html",{'formset':formset})
         print(formset.errors)
-        return render(request, "home.html", {'formset':formset})
+        return render(request, self.template_name, {'formset':formset, 'days':days})
     
 def timingcreate(request):
     days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
@@ -173,5 +187,63 @@ def timingcreate(request):
               
     context['formset']= formset
     return render(request, "days.html", context)
+
+class OrganizationProfile(UpdateView):
+    model = Organization
+    template_name = 'orgupdate.html'
+    form_class = OrganizationProfileForm
+    success_url = reverse_lazy('profile')
+    def get_object(self):
+        return Organization.objects.get(user=self.request.user)
+
+class OrganizationLocationListView(ListView):
+    model=OrganizationLocation
+    template_name='addlist.html'
+    context_object_name='locations'
+    def get_queryset(self):
+        return OrganizationLocation.objects.filter(organization=Organization.objects.get(user=self.request.user))
+
+class LocationCreateView(CreateView):
+    model=OrganizationLocation
+    template_name='addlocation.html'
+    form_class=LocationForm
+    success_url=reverse_lazy('addamenities')
+    def form_valid(self, form):
+        form=form.save(commit=False)
+        form.organization=Organization.objects.get(user=self.request.user)
+        form.save()
+        self.request.session['loc_pk']=form.pk
+        return HttpResponseRedirect(self.success_url)
     
-    
+class AmenitiesCreateView(CreateView):
+    model=OrganizationLocationAmenities
+    template_name='addamenities.html'
+    form_class=AmenitiesForm
+    success_url=reverse_lazy('gametypes')
+    def form_valid(self, form):
+        form=form.save(commit=False)
+        pk=self.request.session.get('loc_pk')
+        form.organization_location=OrganizationLocation.objects.get(pk=pk)
+        form.save()
+        return HttpResponseRedirect(self.success_url)
+
+class GameTypeListView(ListView):
+    model = OrganizationLocationGameType
+    template_name = 'gametypeslist.html'
+    context_object_name = 'gametypes'
+    def get_queryset(self):
+        pk=self.request.session.get('loc_pk')
+        return OrganizationLocationGameType.objects.filter(organization_location=OrganizationLocation.objects.get(pk=pk))
+
+class GameTypeCreateView(CreateView):
+    model = OrganizationLocationGameType
+    template_name = 'addgametype.html'
+    form_class = GameTypeForm
+    success_url = reverse_lazy('gametypes')
+    def form_valid(self, form):
+        form=form.save(commit=False)
+        pk=self.request.session.get('loc_pk')
+        form.organization_location=OrganizationLocation.objects.get(pk=pk)
+        form.save()
+        return HttpResponseRedirect(self.success_url)
+        

@@ -1,0 +1,11 @@
+{% extends 'home.html' %}
+{% block content %}
+<div class="home">
+    <h1>Game Types:</h1>
+    {% for gametype in gametypes %}
+    <a href="{% url 'placeholder' %}">{{gametype.game_type}}</a>
+    {% endfor %}
+    <a href="{% url 'addgametype' %}" class="btn btn-outline-primary">Add New Gametype</a>
+    <a href="{% url 'days' %}" class="btn btn-outline-primary">Next stage</a>
+</div>
+{% endblock %}

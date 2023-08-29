@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'common',
     'administration',
     'smart_selects',
+    'multiforloop',
 ]
 
 MIDDLEWARE = [
@@ -138,8 +139,6 @@ STATICFILES_DIRS=(os.path.join(BASE_DIR,'common/static'),)
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-USE_DJANGO_JQUERY = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

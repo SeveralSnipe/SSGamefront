@@ -374,6 +374,7 @@ class OrganizationLocationGameType(models.Model):
     description=models.TextField()
     is_active=models.BooleanField(default=True)
     
+    
 class OrganizationLocationWorkingTime(models.Model):
     SUNDAY = 0
     MONDAY = 1
@@ -392,9 +393,9 @@ class OrganizationLocationWorkingTime(models.Model):
         ('Saturday', 'Saturday'),
         )
     organization_location= models.ForeignKey(OrganizationLocation, on_delete=models.CASCADE)
-    work_day_choices=models.CharField(max_length=10, choices= day_choices)
-    from_time=models.TimeField()
-    to_time=models.TimeField()
+    work_day_choices=models.CharField(max_length=10, choices= day_choices, blank=True)
+    from_time=models.TimeField(null=True, blank=True)
+    to_time=models.TimeField(null=True, blank=True)
     is_active=models.BooleanField(default=True)
 
 # class OrganizationLocationWorkingDays(models.Model):

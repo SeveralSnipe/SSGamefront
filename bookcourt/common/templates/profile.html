@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="home">
+    <h1>Choose an option</h1>
+    <a href="{% url 'orgprofile' %}" class="btn btn-outline-primary">Update Organization profile</a>
+    <a href="{% url 'addlist' %}" class="btn btn-outline-primary">Add/Update Locations</a>
+</div>
+{% endblock %}
