@@ -1,10 +1,11 @@
-from typing import Any
+from typing import Any, Dict, Optional
+from django.db import models
 from django.db.models.query import QuerySet
 from django.forms.models import BaseModelForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
-from django.views.generic import FormView, CreateView, View, UpdateView, ListView
+from django.views.generic import FormView, CreateView, View, UpdateView, ListView, TemplateView
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -13,7 +14,8 @@ from django.contrib.auth.models import Group
 from django.contrib import messages
 from .forms import *
 from .models import *
-from django.forms import formset_factory, inlineformset_factory
+from django.forms import formset_factory
+from django.core.exceptions import ObjectDoesNotExist
 # Create your views here.
 class HomeForm(FormView):
     form_class=TempForm
@@ -27,8 +29,6 @@ class HomeForm(FormView):
             area_from_form=form['area']
             areaobj=OrganizationLocation.objects.filter(area=area_from_form)
             for location in areaobj:
-                # workingdaysobj=OrganizationLocationWorkingDays.objects.get(organization=location)
-                # if workingdaysobj.check_working(day):
                 org_and_desc_obj += list(OrganizationLocationGameType.objects.filter(game_type=game,organization_location=location).values('organization_location','description'))
             objlist=[]
             for result in org_and_desc_obj:
@@ -150,7 +150,6 @@ class TimingCreate(View):
     success_url=reverse_lazy('placeholder')
     def get(self, request):
         days=('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')
-        print('entered get')
         TimeFormSet = formset_factory(TimeForm, max_num=7, min_num=7)
         formset=TimeFormSet(initial=[{'work_day_choices': day} for day in days])
         return render(request, self.template_name, {'formset':formset, 'days':days})
@@ -160,34 +159,20 @@ class TimingCreate(View):
         TimeFormSet = formset_factory(TimeForm, max_num=7, min_num=7)
         formset=TimeFormSet(request.POST, initial=[{'work_day_choices':day} for day in days])
         ctr=0
-
-        print('This is the formset: ')
-        ctr=0
         if formset.is_valid():
             pk=self.request.session.get('loc_pk')
             for form in formset:
                 form.cleaned_data['work_day_choices']=days[ctr]
                 ctr+=1
                 form=form.cleaned_data
-                dayobj=OrganizationLocationWorkingTime.objects.create(is_active=form['is_active'], work_day_choices=form['work_day_choices'],from_time=form['from_time'],to_time=form['to_time'],organization_location=OrganizationLocation.objects.get(pk=pk))
+                dayobj, created=OrganizationLocationWorkingTime.objects.get_or_create(organization_location=OrganizationLocation.objects.get(pk=pk), work_day_choices=form['work_day_choices'])
+                dayobj.is_active=form['is_active']
+                dayobj.from_time=form['from_time']
+                dayobj.to_time=form['to_time']
                 dayobj.save()
             return render(request,"placeholder.html",{'formset':formset})
-        print(formset.errors)
         return render(request, self.template_name, {'formset':formset, 'days':days})
     
-def timingcreate(request):
-    days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
-    context ={}
-    TimeFormSet = formset_factory(TimeForm, max_num=7, min_num=7)
-    formset = TimeFormSet(request.POST or None, initial=[{'work_day_choices': day} for day in days])
-    if formset.is_valid():
-        for form in formset:
-            print(form.cleaned_data)
-        return render(request,"placeholder.html",context)
-              
-    context['formset']= formset
-    return render(request, "days.html", context)
-
 class OrganizationProfile(UpdateView):
     model = Organization
     template_name = 'orgupdate.html'
@@ -201,30 +186,18 @@ class OrganizationLocationListView(ListView):
     template_name='addlist.html'
     context_object_name='locations'
     def get_queryset(self):
-        return OrganizationLocation.objects.filter(organization=Organization.objects.get(user=self.request.user))
+        return OrganizationLocation.objects.filter(organization__user=self.request.user)
 
 class LocationCreateView(CreateView):
     model=OrganizationLocation
     template_name='addlocation.html'
     form_class=LocationForm
-    success_url=reverse_lazy('addamenities')
+    success_url=reverse_lazy('gametypes')
     def form_valid(self, form):
         form=form.save(commit=False)
         form.organization=Organization.objects.get(user=self.request.user)
         form.save()
         self.request.session['loc_pk']=form.pk
-        return HttpResponseRedirect(self.success_url)
-    
-class AmenitiesCreateView(CreateView):
-    model=OrganizationLocationAmenities
-    template_name='addamenities.html'
-    form_class=AmenitiesForm
-    success_url=reverse_lazy('gametypes')
-    def form_valid(self, form):
-        form=form.save(commit=False)
-        pk=self.request.session.get('loc_pk')
-        form.organization_location=OrganizationLocation.objects.get(pk=pk)
-        form.save()
         return HttpResponseRedirect(self.success_url)
 
 class GameTypeListView(ListView):
@@ -233,7 +206,7 @@ class GameTypeListView(ListView):
     context_object_name = 'gametypes'
     def get_queryset(self):
         pk=self.request.session.get('loc_pk')
-        return OrganizationLocationGameType.objects.filter(organization_location=OrganizationLocation.objects.get(pk=pk))
+        return OrganizationLocationGameType.objects.filter(organization_location__pk=pk)
 
 class GameTypeCreateView(CreateView):
     model = OrganizationLocationGameType
@@ -246,4 +219,83 @@ class GameTypeCreateView(CreateView):
         form.organization_location=OrganizationLocation.objects.get(pk=pk)
         form.save()
         return HttpResponseRedirect(self.success_url)
-        
+
+class LocationUpdateView(UpdateView):
+    model = OrganizationLocation
+    template_name = 'addlocation.html'
+    form_class = LocationForm
+    success_url = reverse_lazy('gametypes')
+    def form_valid(self, form):
+        form=form.save()
+        self.request.session['loc_pk']=form.pk
+        return HttpResponseRedirect(self.success_url)
+    
+class GameTypeUpdateView(UpdateView):
+    model = OrganizationLocationGameType
+    template_name = 'addgametype.html'
+    form_class = GameTypeForm
+    success_url = reverse_lazy('gametypes')
+    def form_valid(self, form):
+        form=form.save(commit=False)
+        pk=self.request.session.get('loc_pk')
+        form.organization_location=OrganizationLocation.objects.get(pk=pk)
+        form.save()
+        return HttpResponseRedirect(self.success_url)  
+          
+class AmenitiesView(UpdateView):
+    model=OrganizationLocationAmenities
+    template_name='addamenities.html'
+    form_class=AmenitiesForm
+    success_url=reverse_lazy('days')
+    def get_object(self):
+        try:
+            pk=self.request.session.get('loc_pk')
+            return OrganizationLocationAmenities.objects.get(organization_location__pk=pk)
+
+        except OrganizationLocationAmenities.DoesNotExist:
+            return None
+    def form_valid(self, form):
+        form=form.save(commit=False)
+        pk=self.request.session.get('loc_pk')
+        form.organization_location=OrganizationLocation.objects.get(pk=pk)
+        form.save()
+        return HttpResponseRedirect(self.success_url)
+
+class ReviewPage(TemplateView):
+    template_name='review.html'
+    
+    def get_context_data(self):
+        context={}
+        locationdetails=[]
+        organization=Organization.objects.get(user=self.request.user)
+        locations=list(OrganizationLocation.objects.filter(organization=organization))
+        for location in locations:
+            ctx_item={}
+            ctx_item['location']=location
+            ctx_item['games']=list(OrganizationLocationGameType.objects.filter(organization_location=location))
+            ctx_item['amenities']=OrganizationLocationAmenities.objects.get(organization_location=location)
+            ctx_item['workingtimes']=list(OrganizationLocationWorkingTime.objects.filter(organization_location=location))
+            locationdetails.append(ctx_item)
+        context['all_locations']=locationdetails
+        return context
+
+class TermsPage(FormView):
+    template_name='terms.html'
+    form_class=TermsForm
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tenant']=Organization.objects.get(user=self.request.user).tenant
+        return context
+    
+    def form_valid(self, form):
+        form=form.cleaned_data
+        if form['agree']:
+            organization=Organization.objects.get(user=self.request.user)
+            organization.is_terms_and_conditions_agreed=True
+            organization.status=3
+            organization.save()
+            return HttpResponseRedirect(reverse_lazy('inprogressconfirmation'))
+        messages.info(self.request, 'You must accept the terms and conditions to proceed further.')
+        return HttpResponseRedirect(reverse_lazy('profile'))
+    

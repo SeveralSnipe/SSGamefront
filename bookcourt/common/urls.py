@@ -5,11 +5,9 @@ from django.contrib.auth.views import LogoutView
 from . import views
 
 urlpatterns=[
-    #path('', views.selectgamelocation, name='home'),
     path('',HomeForm.as_view(), name='home'),
     path('placeholder/',TemplateView.as_view(template_name='placeholder.html'), name='placeholder'),
     path('locationsdisplay/',views.locationsdisplay, name='locationsdisplay'),
-    #path('locationsdisplay/',TemplateView.as_view(template_name='locationsdisplay.html'), name='locationsdisplay'),
     path('detail/',views.locationdetail,name='locationdetail'),
     path('neworg/',CreateUserProfileView.as_view(), name='neworg'),
     path('login/',MyLoginView.as_view(), name='login'),
@@ -19,7 +17,12 @@ urlpatterns=[
     path('orgprofile/',OrganizationProfile.as_view(), name='orgprofile'),
     path('addlist/',OrganizationLocationListView.as_view(), name='addlist'),
     path('addlocation/',LocationCreateView.as_view(), name='addlocation'),
-    path('addamenities/',AmenitiesCreateView.as_view(), name='addamenities'),
+    path('addamenities/',AmenitiesView.as_view(), name='addamenities'),
     path('gametypes/',GameTypeListView.as_view(), name='gametypes'),
     path('addgametype/',GameTypeCreateView.as_view(), name = 'addgametype'),
+    path('updatelocation/<int:pk>',LocationUpdateView.as_view(), name='updatelocation'),
+    path("updategametype/<int:pk>", GameTypeUpdateView.as_view(), name="updategametype"),
+    path("review/", ReviewPage.as_view(), name="review"),
+    path("terms/", TermsPage.as_view(), name="terms"),
+    path("inprogressconfirmation/", TemplateView.as_view(template_name='inprogressconfirmation.html'), name="inprogressconfirmation")
 ]

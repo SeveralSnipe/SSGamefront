@@ -49,13 +49,25 @@
 .home{
     display: flex;
     position: absolute;
-    margin-top: 20vh;
-    top: 0;
+    top: 20vh;
     bottom: 0;
     right: 0;
     left: 0;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+}
+.review{
+    display: flex;
+    position: absolute;
+    margin-top: 1000px;
+    top: 20vh;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 body{
     background-color: aqua;
@@ -83,6 +95,7 @@ ul {
     right: 0;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 }
 .locationdetail{
     margin: auto;

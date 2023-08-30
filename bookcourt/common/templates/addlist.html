@@ -3,7 +3,7 @@
 <div class="home">
     <h1>Locations:</h1>
     {% for location in locations %}
-    <a href="{% url 'placeholder' %}">{{location.address_line_1}}, {{location.area}}</a>
+    <a href="{% url 'updatelocation' location.pk %}">{{location.address_line_1}}, {{location.area}}</a>
     {% endfor %}
     <a href="{% url 'addlocation' %}" class="btn btn-outline-primary">Add New Location</a>
 </div>

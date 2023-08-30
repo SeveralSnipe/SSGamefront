@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="home">
+    <h1>Terms and conditions</h1>
+    <h2 style="font-size: xx-small;">{{tenant.sign_up_terms_and_conditions}}</h2>
+    <form action="" method="post">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <input type="submit" value="Submit" class="btn btn-outline-primary">
+    </form>
+</div>
+{% endblock %}

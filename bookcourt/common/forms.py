@@ -1,12 +1,8 @@
 from django import forms
-from django.db.models.base import Model
 from .models import *
-from django.forms import SelectDateWidget, ModelChoiceField, ValidationError
-from django.contrib.auth.forms import UserCreationForm
+from django.forms import ModelChoiceField, ValidationError
 from django.contrib.auth.models import User
 from smart_selects.form_fields import ChainedModelChoiceField
-import string
-import random
 
 class HomeFormChoiceField(ModelChoiceField):
     def label_from_instance(self, obj):
@@ -46,23 +42,13 @@ class TempForm(forms.Form):
 
 
 class CustomUserCreationForm(forms.Form):  
-    #username = forms.CharField(label='Organization Name', min_length=5, max_length=150)
     first_name= forms.CharField(max_length=150)
     last_name = forms.CharField(max_length=150)  
     email = forms.EmailField(label='Organization Email')  
-    # password1 = forms.CharField(label='Password', widget=forms.PasswordInput)  
-    # password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)  
   
     def generate_temp_password(request):
         password = User.objects.make_random_password(length=6, allowed_chars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
         return password
-
-    # def username_clean(self):  
-    #     username = self.cleaned_data['username'].lower()  
-    #     new = User.objects.filter(username = username)  
-    #     if new.count():  
-    #         raise ValidationError("User Already Exist")  
-    #     return username  
   
     def email_clean(self):  
         email = self.cleaned_data['email'].lower()  
@@ -80,11 +66,7 @@ class CustomUserCreationForm(forms.Form):
             last_name=self.cleaned_data['last_name']
         )
         return user
-class OrganizationProfileForm(forms.ModelForm):
-    class Meta:
-        model= Organization
-        fields=["organization_name","phone_number"]
-        
+    
 class TimeForm(forms.ModelForm):
     class Meta:
         model=OrganizationLocationWorkingTime
@@ -113,26 +95,6 @@ class TimeForm(forms.ModelForm):
             if(from_time==None or to_time==None):
                 raise ValidationError("You must enter timings for active days.")
         return
-
-
-    # def clean_from_time(self):
-    #     from_time=self.cleaned_data['from_time']
-    #     is_active=self.cleaned_data['is_active']
-    #     if(is_active):
-    #         if(from_time==None):
-    #             raise ValidationError("You must enter timings for active days.")
-    #     else:
-    #         return None
-    #     return from_time
-    # def clean_to_time(self):
-    #     to_time=self.cleaned_data['to_time']
-    #     is_active=self.cleaned_data['is_active']
-    #     if(is_active):
-    #         if(to_time==None):
-    #             raise ValidationError("You must enter timings for active days.")
-    #     else:
-    #         return None
-    #     return to_time
         
 class OrganizationProfileForm(forms.ModelForm):
     class Meta:
@@ -154,4 +116,7 @@ class GameTypeForm(forms.ModelForm):
     class Meta:
         model = OrganizationLocationGameType
         exclude = ('organization_location','is_active',)
+    
+class TermsForm(forms.Form):
+    agree=forms.BooleanField()
         
