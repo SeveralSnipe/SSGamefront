@@ -37,7 +37,8 @@
     font-size: large;
 }
 .homeform{
-    display: grid;
+    display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     font-size: xx-small;

@@ -13,14 +13,16 @@
             </ul>
             <h2>Amenities</h2>
                 <ul>
-                    <li>Parking: {{location.amenities.is_parking}}</li>
-                    <li>Restrooms: {{location.amenities.is_restrooms}}</li>
-                    <li>Changerooms: {{location.amenities.is_changerooms}}</li>
-                    <li>Power Backup: {{location.amenities.is_powerbackup}}</li>
-                    <li>Beverages: {{location.amenities.is_beverages_facility}}</li>
-                    <li>Coaching: {{location.amenities.is_coaching_facilities}}</li>
+                    {% for amenity in location.amenities %}
+                    <li>Parking: {{amenity.is_parking}}</li>
+                    <li>Restrooms: {{amenity.is_restrooms}}</li>
+                    <li>Changerooms: {{amenity.is_changerooms}}</li>
+                    <li>Power Backup: {{amenity.is_powerbackup}}</li>
+                    <li>Beverages: {{amenity.is_beverages_facility}}</li>
+                    <li>Coaching: {{amenity.is_coaching_facilities}}</li>
                 </ul>
-                <h3>{{location.amenities.description}}</h3>
+                <h3>{{amenity.description}}</h3>
+                {% endfor %}
             <h2>Working Times</h2>
             <ul>
             {% for day in location.workingtimes %}

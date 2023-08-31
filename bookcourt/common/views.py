@@ -97,10 +97,10 @@ def locationdetail(request):
                   'saturday':workinglist[6],
                 }
     return render(request, 'locationdetail.html', context=context_dict)
-class CreateUserProfileView(CreateView):
+class OrganizationSignupView(CreateView):    #OrganizationSignupView
     model = Organization
-    form_class = OrganizationProfileForm
     user_form_class = CustomUserCreationForm
+    form_class = OrganizationSignupForm    #OrganizationSignupForm
     template_name = 'neworg.html'
     success_url = reverse_lazy('placeholder')
 
@@ -235,12 +235,12 @@ class GameTypeUpdateView(UpdateView):
     template_name = 'addgametype.html'
     form_class = GameTypeForm
     success_url = reverse_lazy('gametypes')
-    def form_valid(self, form):
-        form=form.save(commit=False)
-        pk=self.request.session.get('loc_pk')
-        form.organization_location=OrganizationLocation.objects.get(pk=pk)
-        form.save()
-        return HttpResponseRedirect(self.success_url)  
+    # def form_valid(self, form):
+    #     form=form.save(commit=False)
+    #     pk=self.request.session.get('loc_pk')
+    #     form.organization_location=OrganizationLocation.objects.get(pk=pk)
+    #     form.save()
+    #     return HttpResponseRedirect(self.success_url)  
           
 class AmenitiesView(UpdateView):
     model=OrganizationLocationAmenities
@@ -261,21 +261,20 @@ class AmenitiesView(UpdateView):
         form.save()
         return HttpResponseRedirect(self.success_url)
 
-class ReviewPage(TemplateView):
-    template_name='review.html'
+class PreviewPage(TemplateView):         #Preview
+    template_name='preview.html'
     
     def get_context_data(self):
         context={}
         locationdetails=[]
-        organization=Organization.objects.get(user=self.request.user)
-        locations=list(OrganizationLocation.objects.filter(organization=organization))
+        locations=OrganizationLocation.objects.filter(organization__user=self.request.user)
         for location in locations:
-            ctx_item={}
-            ctx_item['location']=location
-            ctx_item['games']=list(OrganizationLocationGameType.objects.filter(organization_location=location))
-            ctx_item['amenities']=OrganizationLocationAmenities.objects.get(organization_location=location)
-            ctx_item['workingtimes']=list(OrganizationLocationWorkingTime.objects.filter(organization_location=location))
-            locationdetails.append(ctx_item)
+            context_item={}             
+            context_item['location']=location
+            context_item['games']=OrganizationLocationGameType.objects.filter(organization_location=location)
+            context_item['amenities']=OrganizationLocationAmenities.objects.filter(organization_location=location)
+            context_item['workingtimes']=OrganizationLocationWorkingTime.objects.filter(organization_location=location)
+            locationdetails.append(context_item)
         context['all_locations']=locationdetails
         return context
 
@@ -289,13 +288,8 @@ class TermsPage(FormView):
         return context
     
     def form_valid(self, form):
-        form=form.cleaned_data
-        if form['agree']:
-            organization=Organization.objects.get(user=self.request.user)
-            organization.is_terms_and_conditions_agreed=True
-            organization.status=3
-            organization.save()
-            return HttpResponseRedirect(reverse_lazy('inprogressconfirmation'))
-        messages.info(self.request, 'You must accept the terms and conditions to proceed further.')
-        return HttpResponseRedirect(reverse_lazy('profile'))
-    
+        organization=Organization.objects.get(user=self.request.user)
+        organization.is_terms_and_conditions_agreed=True
+        organization.status=3
+        organization.save()
+        return HttpResponseRedirect(reverse_lazy('inprogressconfirmation'))

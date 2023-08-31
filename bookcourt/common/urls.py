@@ -9,7 +9,7 @@ urlpatterns=[
     path('placeholder/',TemplateView.as_view(template_name='placeholder.html'), name='placeholder'),
     path('locationsdisplay/',views.locationsdisplay, name='locationsdisplay'),
     path('detail/',views.locationdetail,name='locationdetail'),
-    path('neworg/',CreateUserProfileView.as_view(), name='neworg'),
+    path('neworg/',OrganizationSignupView.as_view(), name='neworg'),
     path('login/',MyLoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(next_page='login'),name='logout'),
     path('days/',TimingCreate.as_view(), name='days'),
@@ -22,7 +22,7 @@ urlpatterns=[
     path('addgametype/',GameTypeCreateView.as_view(), name = 'addgametype'),
     path('updatelocation/<int:pk>',LocationUpdateView.as_view(), name='updatelocation'),
     path("updategametype/<int:pk>", GameTypeUpdateView.as_view(), name="updategametype"),
-    path("review/", ReviewPage.as_view(), name="review"),
+    path("review/", PreviewPage.as_view(), name="review"),
     path("terms/", TermsPage.as_view(), name="terms"),
     path("inprogressconfirmation/", TemplateView.as_view(template_name='inprogressconfirmation.html'), name="inprogressconfirmation")
 ]

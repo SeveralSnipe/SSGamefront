@@ -66,7 +66,11 @@ class CustomUserCreationForm(forms.Form):
             last_name=self.cleaned_data['last_name']
         )
         return user
-    
+
+class OrganizationSignupForm(forms.ModelForm):
+    class Meta:
+        model= Organization
+        fields=["organization_name","phone_number"]
 class TimeForm(forms.ModelForm):
     class Meta:
         model=OrganizationLocationWorkingTime
