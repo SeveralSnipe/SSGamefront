@@ -1,0 +1,9 @@
+{% extends 'home.html' %}
+{% block content %}
+<div class="home">
+    <h1>Organizations:</h1>
+    {% for organization in organizations %}
+    <a href="{% url 'verifyorg' organization.pk %}">{{organization.organization_name}}</a>
+    {% endfor %}
+</div>
+{% endblock %}

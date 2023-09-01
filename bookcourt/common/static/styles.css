@@ -30,11 +30,14 @@
     left: 20%;
 }
 .loginoptions{
-    position: absolute;
-    right: 15%;
+    display: flex;
+    position: fixed;
+    flex-direction: column;
+    left: 7%;
     font-family: Courgette;
     font-weight: 300;
     font-size: large;
+    z-index: 100;
 }
 .homeform{
     display: flex;
@@ -49,7 +52,7 @@
 }
 .home{
     display: flex;
-    position: absolute;
+    position: fixed;
     top: 20vh;
     bottom: 0;
     right: 0;
@@ -57,6 +60,7 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    overflow: auto;
 }
 .review{
     display: flex;

@@ -1,10 +1,16 @@
 {% extends 'home.html' %}
 {% block content %}
-<div class="review">
+<div class="verify">
+    <h1>{{object.organization_name}}</h1>
+    <p>
+        Phone: {{object.phone_number}}
+        Alternate Phone: {{object.alt_number}}
+        {{object.description}}
+        {{object.created_date}}
+    </p>
     {% for location in all_locations %}
-    <hr>
+        <hr>
         <h1>{{location.location.address_line_1}} {{location.location.address_line_2}} {{location.location.area}} {{location.location.pincode}} {{location.location.phone_number}}</h1>
-            <hr>
             <h2>Games</h2>
             <ul>
             {% for game in location.games %}
@@ -26,8 +32,8 @@
                 </ul>
                 <h3>{{amenity.description}}</h3>
                 {% endfor %}
-            <h2>Working Times</h2>
             <hr>
+            <h2>Working Times</h2>
             <ul>
             {% for day in location.workingtimes %}
                 <li>{{day.work_day_choices}} {{day.is_active}} {{day.from_time}} - {{day.to_time}}</li>
@@ -35,7 +41,7 @@
             </ul>
     {% endfor %}
     <hr>
-    <a href="{% url 'profile' %}" class="btn btn-outline-primary">Go back</a>
-    <a href="{% url 'terms' %}" class="btn btn-outline-primary">Submit</a>
+    <a href="{% url 'statusset' %}?accepted={{True}}" class="btn btn-outline-primary">Approve</a>
+    <a href="{% url 'statusset' %}?accepted={{False}}" class="btn btn-outline-primary">Reject</a>
 </div>
 {% endblock %}

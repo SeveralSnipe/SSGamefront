@@ -4,6 +4,8 @@
 <div class="home">
     {% if request.user|has_group:"Organization" %}
     <h1>Signed in as Organization</h1>
+    {% elif request.user|has_group:"TenantEmployee" %}
+    <h1>Signed in as a Tenant Employee</h1>
     {% else %}
     <h1>Welcome to Gamefront</h1>
     <form action="" method="post" class="homeform">

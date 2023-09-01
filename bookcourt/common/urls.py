@@ -24,5 +24,9 @@ urlpatterns=[
     path("updategametype/<int:pk>", GameTypeUpdateView.as_view(), name="updategametype"),
     path("review/", PreviewPage.as_view(), name="review"),
     path("terms/", TermsPage.as_view(), name="terms"),
-    path("inprogressconfirmation/", TemplateView.as_view(template_name='inprogressconfirmation.html'), name="inprogressconfirmation")
+    path("inprogressconfirmation/", TemplateView.as_view(template_name='inprogressconfirmation.html'), name="inprogressconfirmation"),
+    path("approvals/", ApprovalList.as_view(), name="approvals"),
+    path("verifyorg/<int:pk>", VerifyOrganization.as_view(), name="verifyorg"),
+    path("statusset/", SetStatus.as_view(), name="statusset"),
+    path("checkstatus/", CheckStatus.as_view(), name="checkstatus")
 ]

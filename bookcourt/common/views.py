@@ -1,3 +1,4 @@
+import datetime
 from typing import Any, Dict, Optional
 from django.db import models
 from django.db.models.query import QuerySet
@@ -5,7 +6,7 @@ from django.forms.models import BaseModelForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
-from django.views.generic import FormView, CreateView, View, UpdateView, ListView, TemplateView
+from django.views.generic import FormView, CreateView, View, UpdateView, ListView, TemplateView, RedirectView, DetailView
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -41,7 +42,6 @@ class HomeForm(FormView):
             self.request.session['objlist']=objlist
             #response=render(self.request,'locationsdisplay.html',{'objlist':objlist})
             return super().form_valid(form)
-    
 def locationsdisplay(request):
      objlist=request.session.get('objlist')
      game=request.session.get('game')
@@ -290,6 +290,71 @@ class TermsPage(FormView):
     def form_valid(self, form):
         organization=Organization.objects.get(user=self.request.user)
         organization.is_terms_and_conditions_agreed=True
-        organization.status=3
+        organization.status=Organization.IN_PROGRESS
         organization.save()
         return HttpResponseRedirect(reverse_lazy('inprogressconfirmation'))
+
+class ApprovalList(ListView):
+    template_name='approvallist.html'
+    context_object_name = 'organizations'
+    def get_queryset(self):
+        return Organization.objects.filter(tenant=TenantUser.objects.get(user=self.request.user).tenant, status=Organization.IN_PROGRESS)
+    
+class VerifyOrganization(DetailView):
+    model=Organization
+    template_name='verify.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        locations=OrganizationLocation.objects.filter(organization=self.get_object())
+        self.request.session['orgpk']=self.get_object().pk
+        locationdetails=[]
+        for location in locations:
+            context_item={}             
+            context_item['location']=location
+            context_item['games']=OrganizationLocationGameType.objects.filter(organization_location=location)
+            context_item['amenities']=OrganizationLocationAmenities.objects.filter(organization_location=location)
+            context_item['workingtimes']=OrganizationLocationWorkingTime.objects.filter(organization_location=location)
+            locationdetails.append(context_item)
+        context['all_locations']=locationdetails
+        return context
+
+class SetStatus(RedirectView):
+    pattern_name = "approvals"
+    def get_redirect_url(self, *args, **kwargs):
+        orgpk=self.request.session.get('orgpk')
+        accepted=self.request.GET['accepted']
+        print(accepted)
+        org=Organization.objects.get(pk=orgpk)
+        if accepted=="True":
+            org.status=Organization.APPROVED
+            org.approved_date=datetime.datetime.now()
+            org.save()
+        else:
+            org.status=Organization.CANCELLED
+            org.save()
+        return super().get_redirect_url(*args, **kwargs)
+
+class CheckStatus(TemplateView):
+    template_name='status.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        org=Organization.objects.get(user=self.request.user)
+        if org.status == Organization.IN_PROGRESS:
+            status="Processing"
+            message= "Your application is still being processed."
+        elif org.status == Organization.PENDING:
+            status="Not submitted"
+            message= "Please fill your details and confirm to submit your application."
+        elif org.status == Organization.APPROVED:
+            status="Approved"
+            message= "Your application has been approved!"
+        else:
+            status="Rejected"
+            message= "Your application has been rejected. Please review your information and try again."
+        context["message"] = message
+        context["status"] =status
+        return context
+    
+    
