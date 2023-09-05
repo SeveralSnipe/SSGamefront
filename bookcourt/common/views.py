@@ -170,7 +170,6 @@ class TimingCreate(View):
                 dayobj.from_time=form['from_time']
                 dayobj.to_time=form['to_time']
                 dayobj.save()
-            return render(request,"placeholder.html",{'formset':formset})
         return render(request, self.template_name, {'formset':formset, 'days':days})
     
 class OrganizationProfile(UpdateView):
@@ -324,7 +323,6 @@ class SetStatus(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         orgpk=self.request.session.get('orgpk')
         accepted=self.request.GET['accepted']
-        print(accepted)
         org=Organization.objects.get(pk=orgpk)
         if accepted=="True":
             org.status=Organization.APPROVED
@@ -356,5 +354,16 @@ class CheckStatus(TemplateView):
         context["message"] = message
         context["status"] =status
         return context
+
+class TestView(FormView):
+    form_class=TestJSForm
+    success_url=reverse_lazy('placeholder')
+    template_name='testjsform.html'
     
+    def form_valid(self, form):
+        print(form)
+        form=form.cleaned_data
+        minutes=form['hours']*60 + form['minutes']
+        print(minutes)
+        return super().form_valid(form)
     

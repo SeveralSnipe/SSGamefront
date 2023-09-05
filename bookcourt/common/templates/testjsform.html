@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="home">
+    <h1>Fill the duration details</h1>
+        <form action="" method="post">
+            {% csrf_token %}
+            <p>
+                {{form.hours.label}}
+                <a style="background-color: #ffb3b3; padding: 5px; border: 1px solid black; cursor: pointer; " onclick="decHours()">-</a>
+                {{form.hours}}
+                <a style="background-color: #b3ffb3; padding: 5px; border: 1px solid black; cursor: pointer;" onclick="incHours()">+</a>
+                {{form.minutes.label}}
+                <a style="background-color: #ffb3b3; padding: 5px; border: 1px solid black; cursor: pointer; " onclick="decMinutes()">-</a>
+                {{form.minutes}}
+                <a style="background-color: #b3ffb3; padding: 5px; border: 1px solid black; cursor: pointer;" onclick="incMinutes()">+</a>
+           </p>
+            <input type="submit" value="Submit" class="btn btn-outline-primary">
+        </form>
+</div>
+<script>
+    function incHours() {
+        let hours = document.querySelector('[name="hours"]');
+        if  (hours.value > 11){
+            alert("You cannot book for more than 12 hours")
+        }
+        else {
+            hours.value++;
+            console.log(hours.value);
+        }
+    }
+    
+    function decHours() {
+        let hours = document.querySelector('[name="hours"]');
+        if (parseInt(hours.value) > 0) {
+            hours.value--;
+        }
+    
+        else {
+            alert("You can decrease up to 0")
+        }
+    }
+    function incMinutes() {
+        let minutes = document.querySelector('[name="minutes"]');
+        let hours = document.querySelector('[name="hours"]');
+        if  (minutes.value == 0){
+            minutes.value = 30;
+            console.log(minutes.value);
+        }
+        else if (minutes.value == 30 && hours.value == 12){
+            alert("Maximum time increment reached")
+        }
+        else{
+            minutes.value = 0
+            hours.value++
+            console.log(minutes.value);
+            console.log(hours.value)
+        }
+    }
+    
+    function decMinutes() {
+        let minutes = document.querySelector('[name="minutes"]');
+        let hours = document.querySelector('[name="hours"]');
+        if  (minutes.value == 0 && hours.value == 0){
+            alert("Maximum time decrement reached")
+        }
+        else if (minutes.value == 0){
+            minutes.value = 30
+            hours.value--
+        }
+        else{
+            minutes.value = 0
+            console.log(minutes.value);
+        }
+    }
+        
+</script>
+{% endblock %}

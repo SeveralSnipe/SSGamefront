@@ -3,6 +3,7 @@ from .models import *
 from django.forms import ModelChoiceField, ValidationError
 from django.contrib.auth.models import User
 from smart_selects.form_fields import ChainedModelChoiceField
+from durationwidget.widgets import TimeDurationWidget
 
 class HomeFormChoiceField(ModelChoiceField):
     def label_from_instance(self, obj):
@@ -123,4 +124,11 @@ class GameTypeForm(forms.ModelForm):
     
 class TermsForm(forms.Form):
     agree=forms.BooleanField()
-        
+    
+class TestForm(forms.Form):
+    duration=forms.DurationField(widget=TimeDurationWidget(show_days=False, show_seconds=False))
+
+class TestJSForm(forms.Form):
+    hours=forms.IntegerField(disabled=True, min_value=0, initial=0)
+    minutes=forms.IntegerField(disabled=True, min_value=0, initial=0)
+    

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'administration',
     'smart_selects',
     'multiforloop',
+    'durationwidget',
 ]
 
 MIDDLEWARE = [
