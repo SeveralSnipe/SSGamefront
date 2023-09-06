@@ -49,6 +49,7 @@ def locationsdisplay(request):
      return render(request,'locationsdisplay.html',{'objlist':objlist,'game':game,'area':area})
 
 def locationdetail(request):
+    days=('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')
     org=request.GET['orgname']
     area=request.session.get('area')
     game_name=request.session.get('game')
@@ -59,6 +60,8 @@ def locationdetail(request):
     locationgame=OrganizationLocationGameType.objects.get(organization_location=locationobj,game_type=gameobj)
     amenitiesobj=OrganizationLocationAmenities.objects.get(organization_location=locationobj)
     workinglist=[]
+    for day in days:
+        workinglist+=OrganizationLocationWorkingTime.objects.filter(organization_location=locationobj, work_day_choices=day)
     #workingobj=OrganizationLocationWorkingDays.objects.filter(organization=locationobj)
     # for i in range(7):
     #     daytimeobj=OrganizationLocationWorkingDays.objects.get(organization_location=locationobj, days=i)
