@@ -137,6 +137,8 @@ class OrganizationLocationGameType(models.Model):
     
     
 class OrganizationLocationWorkingTime(models.Model):
+    WORK_DAY_CHOICES = 'work_day_choices'
+    
     day_choices = (
         ('Sunday', 'Sunday'),
         ('Monday', 'Monday'),

@@ -1,6 +1,6 @@
 from django import forms
 from .models import *
-from django.forms import ModelChoiceField, ValidationError
+from django.forms import DateInput, ModelChoiceField, SelectDateWidget, TimeInput, ValidationError
 from django.contrib.auth.models import User
 from smart_selects.form_fields import ChainedModelChoiceField
 from durationwidget.widgets import TimeDurationWidget
@@ -40,6 +40,8 @@ class HomeForm(forms.Form):
 class TempForm(forms.Form):
     game=HomeFormChoiceField(queryset=GameType.objects.filter(is_active=True), label='Select Gametype')
     area=AreaFormChoiceField(queryset=Area.objects.filter(is_active=True), label='Select Area')
+    date=forms.DateField(widget=DateInput(attrs={'type':'date'}))
+
 
 
 class CustomUserCreationForm(forms.Form):  
@@ -131,4 +133,11 @@ class TestForm(forms.Form):
 class TestJSForm(forms.Form):
     hours=forms.IntegerField(disabled=True, min_value=0, initial=0)
     minutes=forms.IntegerField(disabled=True, min_value=0, initial=0)
+
+class BookingForm(forms.Form):
+    start_time=forms.TimeField(widget=TimeInput(attrs={'type':'time'}))
+    hours=forms.IntegerField(disabled=True, min_value=0, initial=0)
+    minutes=forms.IntegerField(disabled=True, min_value=0, initial=0)
+
+    
     

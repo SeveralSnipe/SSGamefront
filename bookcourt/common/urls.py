@@ -29,5 +29,6 @@ urlpatterns=[
     path("verifyorg/<int:pk>", VerifyOrganization.as_view(), name="verifyorg"),
     path("statusset/", SetStatus.as_view(), name="statusset"),
     path("checkstatus/", CheckStatus.as_view(), name="checkstatus"),
-    path("test/", TestView.as_view(), name="test")
+    path("test/", TestView.as_view(), name="test"),
+    path("booking/", BookingView.as_view(), name="booking"),
 ]
