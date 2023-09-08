@@ -5,7 +5,7 @@
     <h2>{{gamename}}</h2>
     <h2>{{date.day}}/{{date.month}}/{{date.year}}</h2>
     <h3>Fill the duration details</h3>
-        <form action="" method="post">
+        <form action="" method="post" id="bookform">
             {% csrf_token %}
             <p>
                 {{form.start_time.label}}
@@ -76,7 +76,6 @@
             minutes.value = 0
             console.log(minutes.value);
         }
-    }
-        
+    } 
 </script>
 {% endblock %}

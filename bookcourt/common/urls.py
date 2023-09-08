@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 from .views import *
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LogoutView
@@ -12,7 +12,7 @@ urlpatterns=[
     path('neworg/',OrganizationSignupView.as_view(), name='neworg'),
     path('login/',MyLoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(next_page='login'),name='logout'),
-    path('days/',TimingCreate.as_view(), name='days'),
+    path('days/',TimingView.as_view(), name='days'),
     path('profile/',TemplateView.as_view(template_name='profile.html'), name='profile'),
     path('orgprofile/',OrganizationProfile.as_view(), name='orgprofile'),
     path('addlist/',OrganizationLocationListView.as_view(), name='addlist'),
@@ -30,5 +30,6 @@ urlpatterns=[
     path("statusset/", SetStatus.as_view(), name="statusset"),
     path("checkstatus/", CheckStatus.as_view(), name="checkstatus"),
     path("test/", TestView.as_view(), name="test"),
-    path("booking/", BookingView.as_view(), name="booking"),
+    path("booking/", include('booking.urls'), name="booking"),
+    #path("booking/", BookingView.as_view(), name="booking"),
 ]

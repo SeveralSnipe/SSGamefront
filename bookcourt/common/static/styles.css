@@ -26,7 +26,7 @@
     justify-content: center;
     font-family: Vina Sans;
     font-size: xx-large;
-    z-index: 99;
+    z-index: 0;
 }
 .homebutton{
     position: fixed;
@@ -68,11 +68,18 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    font-size: xx-small;
+    font-size: small;
 }
 .homeform > *:not(:last-child) {
     display: block;
     margin-bottom: 20px; 
+}
+.dayform{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: xx-small;
 }
 .home{
     display: flex;

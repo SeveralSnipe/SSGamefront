@@ -1,6 +1,6 @@
 from django import forms
 from .models import *
-from django.forms import DateInput, ModelChoiceField, SelectDateWidget, TimeInput, ValidationError
+from django.forms import DateInput, ModelChoiceField, SelectDateWidget, TimeInput, ValidationError, modelformset_factory
 from django.contrib.auth.models import User
 from smart_selects.form_fields import ChainedModelChoiceField
 from durationwidget.widgets import TimeDurationWidget
@@ -77,21 +77,21 @@ class OrganizationSignupForm(forms.ModelForm):
 class TimeForm(forms.ModelForm):
     class Meta:
         model=OrganizationLocationWorkingTime
-        fields=['is_active','work_day_choices','from_time','to_time']
+        fields=['is_active','from_time','to_time']
         widgets={
-            'work_day_choices':forms.TextInput(attrs={'disabled':True, 'required': False}),
+            #'work_day_choices':forms.TextInput(attrs={'readonly': True}),
             'from_time': forms.TimeInput(attrs={'type':'time', 'required': False}),
             'to_time': forms.TimeInput(attrs={'type':'time', 'required': False}),
         }
         labels={
             'is_active':'Working',
-            'work_day_choices':'Day',
+            #'work_day_choices':'Day',
             'from_time':'From',
             'to_time':'To',
         }
         required={
             'is_active',
-            'work_day_choices',
+            #'work_day_choices',
         }
         
     def clean(self):
@@ -102,7 +102,8 @@ class TimeForm(forms.ModelForm):
             if(from_time==None or to_time==None):
                 raise ValidationError("You must enter timings for active days.")
         return
-        
+    
+TimeModelFormset=modelformset_factory(OrganizationLocationWorkingTime, TimeForm, extra=0)
 class OrganizationProfileForm(forms.ModelForm):
     class Meta:
         model = Organization
@@ -112,17 +113,27 @@ class LocationForm(forms.ModelForm):
     class Meta:
         model = OrganizationLocation
         fields=['address_line_1','address_line_2','area','pincode','phone_number']
+        widgets = {
+          'address_line_1': forms.Textarea(attrs={'rows':1, 'cols':25}),
+          'address_line_2': forms.Textarea(attrs={'rows':1, 'cols':25}),
+        }
 
 class AmenitiesForm(forms.ModelForm):
     class Meta:
         model = OrganizationLocationAmenities
         exclude = ('organization_location','is_active',)
+        widgets = {
+          'description': forms.Textarea(attrs={'rows':5, 'cols':35}),
+        }
 
 class GameTypeForm(forms.ModelForm):
     
     class Meta:
         model = OrganizationLocationGameType
         exclude = ('organization_location','is_active',)
+        widgets = {
+          'description': forms.Textarea(attrs={'rows':5, 'cols':35}),
+        }
     
 class TermsForm(forms.Form):
     agree=forms.BooleanField()
@@ -136,8 +147,14 @@ class TestJSForm(forms.Form):
 
 class BookingForm(forms.Form):
     start_time=forms.TimeField(widget=TimeInput(attrs={'type':'time'}))
-    hours=forms.IntegerField(disabled=True, min_value=0, initial=0)
-    minutes=forms.IntegerField(disabled=True, min_value=0, initial=0)
+    hours=forms.IntegerField(widget=forms.NumberInput(attrs={'readonly': True}), min_value=0, initial=0)
+    minutes=forms.IntegerField(widget=forms.NumberInput(attrs={'readonly': True}), min_value=0, initial=0)
+
+    def clean(self):
+        hours=self.cleaned_data.get('hours')
+        minutes=self.cleaned_data.get('minutes')
+        if (hours<0 or hours>12 or (minutes==0 and hours==0) or (minutes!=30 and minutes!=0)):
+            raise ValidationError("Incorrect values for minutes and hours.")
 
     
     

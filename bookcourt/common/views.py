@@ -155,36 +155,66 @@ class MyLoginView(LoginView):
         messages.error(self.request,'Invalid username or password')
         return self.render_to_response(self.get_context_data(form=form))
 
-class TimingCreate(View):       #name change
-    model=OrganizationLocationWorkingTime
-    template_name='days.html'
-    form_class=TimeForm
-    success_url=reverse_lazy('placeholder')
-    def get(self, request):
-        days=('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')   #days hard coded ? both in models and views ?     move to constants.py
-        TimeFormSet = formset_factory(TimeForm, max_num=7, min_num=7)
-        formset=TimeFormSet(initial=[{'work_day_choices': day} for day in days])
-        return render(request, self.template_name, {'formset':formset, 'days':days})
+# class TimingCreate(View):       #name change
+#     model=OrganizationLocationWorkingTime
+#     template_name='days.html'
+#     form_class=TimeForm
+#     success_url=reverse_lazy('placeholder')
+#     def get(self, request):
+#         days=('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')   #days hard coded ? both in models and views ?     move to constants.py
+#         TimeFormSet = formset_factory(TimeForm, max_num=7, min_num=7)
+#         formset=TimeFormSet(initial=[{'work_day_choices': day} for day in days])
+#         return render(request, self.template_name, {'formset':formset, 'days':days})
     
+#     def post(self, request):
+#         days=('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')
+#         TimeFormSet = formset_factory(TimeForm, max_num=7, min_num=7)
+#         formset=TimeFormSet(request.POST, initial=[{'work_day_choices': day} for day in days])
+#         print(formset.is_bound)
+#         #ctr=0
+#         if formset.is_valid():
+#             pk=self.request.session.get('loc_pk')
+#             for form in formset:
+#                 # form.cleaned_data['work_day_choices']=days[ctr]
+#                 # ctr+=1
+#                 form=form.cleaned_data
+#                 dayobj, created=OrganizationLocationWorkingTime.objects.get_or_create(organization_location=OrganizationLocation.objects.get(pk=pk), work_day_choices=form['work_day_choices'])
+#                 dayobj.is_active=form['is_active']
+#                 dayobj.from_time=form['from_time']
+#                 dayobj.to_time=form['to_time']
+#                 dayobj.save()
+#             return HttpResponseRedirect(reverse_lazy('profile'))
+#         # if formset.total_error_count()>0:
+#         #     return HttpResponseRedirect(reverse_lazy('days'))
+#         return render(request, self.template_name, {'formset':formset, 'days':days})
+
+class TimingView(UpdateView):
+    model=OrganizationLocationWorkingTime
+    form_class=TimeForm
+    formset_class=TimeModelFormset
+    template_name='days.html'
+    success_url=reverse_lazy('profile')
+    
+    def get_object(self):
+        pk=self.request.session.get('loc_pk')
+        return OrganizationLocationWorkingTime.objects.filter(organization_location__pk=pk)
+    
+    def get_context_data(self, **kwargs):
+        context = {}
+        qs = self.get_object()
+        formset = TimeModelFormset(queryset=qs)
+        context['formset'] = formset
+        return context
+
     def post(self, request):
-        days=('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')
-        TimeFormSet = formset_factory(TimeForm, max_num=7, min_num=7)
-        formset=TimeFormSet(request.POST, initial=[{'work_day_choices': day} for day in days])
-        print(formset.is_bound)
-        #ctr=0
+        qs = self.get_object()
+        formset = TimeModelFormset(self.request.POST, queryset=qs)
+
         if formset.is_valid():
-            pk=self.request.session.get('loc_pk')
-            for form in formset:
-                # form.cleaned_data['work_day_choices']=days[ctr]
-                # ctr+=1
-                form=form.cleaned_data
-                dayobj, created=OrganizationLocationWorkingTime.objects.get_or_create(organization_location=OrganizationLocation.objects.get(pk=pk), work_day_choices=form['work_day_choices'])
-                dayobj.is_active=form['is_active']
-                dayobj.from_time=form['from_time']
-                dayobj.to_time=form['to_time']
-                dayobj.save()
-            return HttpResponseRedirect(reverse_lazy('profile'))
-        return render(request, self.template_name, {'formset':formset, 'days':days})
+            formset.save()
+            return HttpResponseRedirect(self.success_url)
+        return render(request, self.template_name, {'formset':formset})
+    
     
 class OrganizationProfile(UpdateView):
     model = Organization
@@ -207,10 +237,14 @@ class LocationCreateView(CreateView):
     form_class=LocationForm
     success_url=reverse_lazy('gametypes')
     def form_valid(self, form):
+        days=('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')
         form=form.save(commit=False)
         form.organization=Organization.objects.get(user=self.request.user)
         form.save()
         self.request.session['loc_pk']=form.pk
+        for day in days:
+            obj=OrganizationLocationWorkingTime.objects.create(work_day_choices=day,organization_location=OrganizationLocation.objects.get(pk=form.pk))
+            obj.save()
         return HttpResponseRedirect(self.success_url)
 
 class GameTypeListView(ListView):
@@ -381,41 +415,7 @@ class TestView(FormView):
         print(minutes)
         return super().form_valid(form)
 
-class BookingView(FormView):
-    form_class=BookingForm
-    success_url=reverse_lazy('placeholder')
-    template_name='booking.html'
-    
-    def get_context_data(self, **kwargs):
-        context=super().get_context_data(**kwargs)
-        gametype=OrganizationLocationGameType.objects.get(pk=self.request.session.get('gametypepk'))
-        date=self.request.session.get('date')
-        date=datetime.datetime.strptime(date,'%d-%m-%Y')
-        day=date.strftime('%A')
-        workingtime=OrganizationLocationWorkingTime.objects.get(organization_location=gametype.organization_location, work_day_choices=day)
-        fromtime=workingtime.from_time
-        delta=datetime.timedelta(hours=fromtime.hour,minutes=fromtime.minute).total_seconds()
-        from_minutes=delta//60
-        totime=workingtime.to_time
-        delta=datetime.timedelta(hours=totime.hour,minutes=totime.minute).total_seconds()
-        to_minutes=delta//60
-        context['organizationname']=gametype.organization_location.organization.organization_name
-        context['gamename']=gametype.game_type
-        context['date']=date
-        context['from_minutes']=from_minutes
-        context['to_minutes']=to_minutes
-        context['pricing']=gametype.pricing
-        return context
-        
-    def form_valid(self, form):
-        form=form.cleaned_data
-        self.request.session['starttime']=form['start_time'].strftime('%H:%M')
-        total_minutes=form['hours']*60+form['minutes']
-        price=self.request.session.get('pricing')*(total_minutes//30)
-        self.request.session['hours']=form['hours']
-        self.request.session['minutes']=form['minutes']
-        self.request.session['totalprice']=price
-        return super().form_valid(form)
+
                
         
         
