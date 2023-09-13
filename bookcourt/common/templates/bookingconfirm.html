@@ -1,0 +1,20 @@
+{% extends 'home.html' %}
+{% block content %}
+<div class="bookingconfirm">
+    <div class="placedetails">
+        <h2 style="font-size: larger;">{{organizationname}}</h2>
+        <h3 style="font-size: smaller;">{{gamename}}</h3>
+        <h3 style="font-size: smaller;">{{area}}</h3>
+        <h3 style="font-size: smaller;">{{organizationloc.address_line_1}}</h3>
+        <h3 style="font-size: smaller;">{{organizationloc.address_line_2}}</h3>
+        <h3 style="font-size: smaller;">{{organizationloc.pincode}}</h3>
+    </div>
+    <div class="bookingdetails">
+        <h2 style="font-size: larger;">Date: {{date}}</h3>
+        <h3 style="font-size: smaller;">Starting time: {{starttime}}</h3>
+        <h3 style="font-size: smaller;">Duration: {{hours}} hours, {{minutes}} minutes</h3>
+        <h3 style="font-size: smaller;">Total: {{totalprice}}</h3>
+    </div>
+    <a href="{% url 'placeholder' %}" class="btn btn-outline-primary">Proceed to Pay</a>
+</div>
+{% endblock %}

@@ -1,14 +1,14 @@
 import datetime
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import FormView
+from django.views.generic import FormView, TemplateView
 from common.forms import BookingForm
 from common.models import *
 
 # Create your views here.
 class BookingView(FormView):
     form_class=BookingForm
-    success_url=reverse_lazy('placeholder')
+    success_url=reverse_lazy('confirmation')
     template_name='booking.html'
     
     def get_context_data(self, **kwargs):
@@ -25,12 +25,13 @@ class BookingView(FormView):
         delta=datetime.timedelta(hours=totime.hour,minutes=totime.minute).total_seconds()
         to_minutes=delta//60
         context['organizationname']=gametype.organization_location.organization.organization_name
-        context['gamename']=gametype.game_type
+        context['gamename']=self.request.session.get('game')
         context['date']=date
         context['from_minutes']=from_minutes
         context['to_minutes']=to_minutes
         context['pricing']=gametype.pricing
         self.request.session['pricing']=str(gametype.pricing)
+        self.request.session['organizationname']=gametype.organization_location.organization.organization_name
         return context
         
     def form_valid(self, form):
@@ -47,3 +48,24 @@ class BookingView(FormView):
         self.request.session['minutes']=form['minutes']
         self.request.session['totalprice']=price
         return super().form_valid(form)
+
+class BookingConfirmationView(TemplateView):
+    template_name = "bookingconfirm.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        organizationname = self.request.session.get('organizationname')
+        area = self.request.session.get('area')
+        context["organizationname"] = organizationname
+        context["area"] = area
+        context["gamename"] = self.request.session.get('game')
+        context["date"] = self.request.session.get('date')
+        context["totalprice"] = self.request.session.get('totalprice')
+        context["hours"] = self.request.session.get('hours')
+        context["minutes"] = self.request.session.get('minutes')
+        context["starttime"] = self.request.session.get('starttime')
+        organizationlocation = OrganizationLocation.objects.get(organization=Organization.objects.get(
+            organization_name=organizationname), area=Area.objects.get(area_name=area))
+        context["organizationloc"] = organizationlocation
+        return context
+    

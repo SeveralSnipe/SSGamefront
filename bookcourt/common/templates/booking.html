@@ -5,7 +5,7 @@
     <h2>{{gamename}}</h2>
     <h2>{{date.day}}/{{date.month}}/{{date.year}}</h2>
     <h3>Fill the duration details</h3>
-        <form action="" method="post" id="bookform">
+        <form action="" method="post" id="bookform" onsubmit="return checkTime()">
             {% csrf_token %}
             <p>
                 {{form.start_time.label}}
@@ -21,6 +21,8 @@
            </p>
             <input type="submit" value="Submit" class="btn btn-outline-primary">
         </form>
+        <a onclick="checkPrice()">Check price</a>
+        <div id="price"></div>
 </div>
 <script>
     function incHours() {
@@ -49,7 +51,6 @@
         let hours = document.querySelector('[name="hours"]');
         if  (minutes.value == 0){
             minutes.value = 30;
-            console.log(minutes.value);
         }
         else if (minutes.value == 30 && hours.value == 12){
             alert("Maximum time increment reached")
@@ -57,8 +58,6 @@
         else{
             minutes.value = 0
             hours.value++
-            console.log(minutes.value);
-            console.log(hours.value)
         }
     }
     
@@ -74,8 +73,39 @@
         }
         else{
             minutes.value = 0
-            console.log(minutes.value);
         }
-    } 
+    }
+
+    function checkTime() {
+        let time_from_html = document.querySelector('[name="start_time"]')
+        let hours = parseInt(time_from_html.value.slice(0,2))
+        let minutes = parseInt(time_from_html.value.slice(-2))
+        let duration_hours = parseInt(document.querySelector('[name="hours"]').value)
+        let duration_minutes = parseInt(document.querySelector('[name="minutes"]').value)
+        let total_minutes = hours*60 + minutes
+        let booked_till = total_minutes + duration_hours*60 + duration_minutes
+        if (total_minutes < parseInt('{{from_minutes}}')){
+            alert("Location would not have opened yet")
+            return false
+        }
+        else if (booked_till > parseInt('{{to_minutes}}')){
+            alert("Location would have closed")
+            return false
+        }
+        else{
+            return true
+        }
+    }
+
+    function checkPrice() {
+        if (checkTime()){
+            let duration_hours = parseInt(document.querySelector('[name="hours"]').value)
+            let duration_minutes = parseInt(document.querySelector('[name="minutes"]').value)
+            let total_minutes = duration_hours*60 + duration_minutes
+            let price_per_30_min = parseInt('{{pricing}}')
+            let total_price = (total_minutes/30)*price_per_30_min
+            document.getElementById("price").innerHTML = "<h3>Rs."+total_price+"</h3>"
+        }
+    }
 </script>
 {% endblock %}

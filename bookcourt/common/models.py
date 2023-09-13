@@ -153,6 +153,9 @@ class OrganizationLocationWorkingTime(models.Model):
     from_time=models.TimeField(null=True, blank=True)
     to_time=models.TimeField(null=True, blank=True)
     is_active=models.BooleanField(default=True)
+    
+    def __str__(self):
+        return self.organization_location.organization.organization_name + self.organization_location.area.area_name + self.work_day_choices
 
 class OrganizationGameImages(models.Model):
     organization=models.ForeignKey(OrganizationLocationGameType, on_delete=models.CASCADE)
