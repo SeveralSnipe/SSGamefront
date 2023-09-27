@@ -4,7 +4,14 @@ from django.forms import DateInput, ModelChoiceField, SelectDateWidget, TimeInpu
 from django.contrib.auth.models import User
 from smart_selects.form_fields import ChainedModelChoiceField
 from durationwidget.widgets import TimeDurationWidget
+from django.utils.timezone import now
 
+class FutureDateInput(forms.DateInput):
+    input_type = 'date'
+
+    def get_context(self, name, value, attrs):
+        attrs.setdefault('min', now().strftime('%Y-%m-%d'))
+        return super().get_context(name, value, attrs)
 class HomeFormChoiceField(ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.game_name
@@ -40,7 +47,7 @@ class HomeForm(forms.Form):
 class TempForm(forms.Form):
     game=HomeFormChoiceField(queryset=GameType.objects.filter(is_active=True), label='Select Gametype')
     area=AreaFormChoiceField(queryset=Area.objects.filter(is_active=True), label='Select Area')
-    date=forms.DateField(widget=DateInput(attrs={'type':'date'}))
+    date=forms.DateField(widget=FutureDateInput())
 
 
 
@@ -74,6 +81,12 @@ class OrganizationSignupForm(forms.ModelForm):
     class Meta:
         model= Organization
         fields=["organization_name","phone_number"]
+    
+    def clean(self):
+        phone_number=self.cleaned_data.get('phone_number')
+        stringifyed_phone=str(phone_number)
+        if len(stringifyed_phone!=10) or not stringifyed_phone.isnumeric():
+            raise ValidationError("Phone number is of wrong format.")
 class TimeForm(forms.ModelForm):
     class Meta:
         model=OrganizationLocationWorkingTime
