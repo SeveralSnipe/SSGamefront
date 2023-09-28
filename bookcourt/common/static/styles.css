@@ -30,21 +30,22 @@ body::-webkit-scrollbar-thumb {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: burlywood;
+    background-color: #00b4d8;
     width: 100%;
     height: 20vh;
     align-items: center;
     justify-content: center;
-    font-family: Vina Sans;
+    font-family: 'Kanit', sans-serif;
     font-size: xx-large;
     z-index: 1;
 }
 .homebutton{
     display: flex;
-    position: relative;
-    top: 10%;
-    align-items: center;
-    justify-content: center;
+    position: fixed;
+    top: 8%;
+    right: 8%;
+    /* align-items: center;
+    justify-content: center; */
     z-index: 101;
 }
 .sidebar{
@@ -52,13 +53,13 @@ body::-webkit-scrollbar-thumb {
     position: fixed;
     flex-direction: column;
     left: 0;
-    font-family: Courgette;
+    font-family: 'Archivo', sans-serif;
     font-weight: 300;
     font-size: large;
     z-index: 100;
     width: 5rem;
     height: 100%;
-    background-color: cadetblue;
+    background-color: #0077b6;
     transition: width 600ms ease;
 
 }
@@ -75,7 +76,7 @@ body::-webkit-scrollbar-thumb {
     bottom: 0;
     align-items: center;
     justify-content: center;
-    font-family: Courgette;
+    font-family: 'Archivo', sans-serif;
     font-weight: 300;
     font-size: large;
     z-index: 100;
@@ -90,16 +91,29 @@ body::-webkit-scrollbar-thumb {
 .loginoptions span a{
     display: none;
 }
+.bi.bi-caret-right-fill{
+    position: fixed;
+    top: 3rem;
+    scale: 1.5;
+    transform: rotate(0deg);
+    transition: 600ms;
+}
 .sidebar:hover .loginoptions span a{
     display: block;
     white-space: nowrap;
 }
+.sidebar:hover .bi.bi-caret-right-fill{
+    transform: rotate(90deg);
+}
+.sidebar:hover span:hover{
+    scale: 1.2;
+}
 .homeform{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: small;
+    font-size: large;
 }
 .homeform > *:not(:last-child) {
     display: block;
@@ -110,7 +124,7 @@ body::-webkit-scrollbar-thumb {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: xx-small;
+    font-size: small;
 }
 .home{
     display: flex;
@@ -138,8 +152,11 @@ body::-webkit-scrollbar-thumb {
     flex-direction: column;
 }
 body{
-    background-color: aqua;
-    display: flex;
+    /* background-image: url(cool-background1.png);
+    background-size: cover; */
+    /* background-color: #90e0ef; */
+    /* background: rgb(143, 249, 249);
+    background: linear-gradient(0deg, rgba(143, 249, 249, 1) 0%, rgba(36, 147, 196, 1) 100%, rgba(34, 146, 195, 1) 100%);    display: flex; */
     position: absolute;
     top: 0;
     bottom: 0;
@@ -148,7 +165,7 @@ body{
     align-items: center;
     justify-content: center;
     overflow: auto;
-    font-family: Courgette;
+    font-family: 'Archivo', sans-serif;
 }
 ul {
     list-style: none;
@@ -157,6 +174,8 @@ ul {
 .content{
     display: flex;
     position: absolute;
+    background: rgb(143, 249, 249);
+    background: linear-gradient(0deg, rgba(143, 249, 249, 1) 0%, rgba(36, 147, 196, 1) 100%, rgba(34, 146, 195, 1) 100%);
     top: 0;
     bottom: 0;
     left: 0;
@@ -203,12 +222,12 @@ ul {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgb(255,157,0);
+    /* background: rgb(255,157,0);
     background: radial-gradient(circle, rgba(255,157,0,1) 0%, rgba(70,236,252,1) 100%);
-    background-size: 700%;
-    /* background-color: orange; */
+    background-size: 700%; */
+    color: black;
+    background-color: #0077b6;
     border-radius: 15px;
-    box-shadow: 0 5px 5px rgb(190, 139, 45);
 }
 .btn.btn-outline-primary:hover{
     background-size:100%;
