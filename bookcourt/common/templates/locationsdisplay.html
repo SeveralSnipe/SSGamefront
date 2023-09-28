@@ -1,23 +1,31 @@
-{% extends 'home.html' %}
-{% block content %}
+{% extends 'home.html' %} {% block content %}
 <div class="displaylocations">
-{% if objlist %}
-    <h1 style="font-size: medium;"> Available locations for {{game}} in {{area}}:</h1>
-    <div class="locations">
-        <ul> 
-            {% for obj in objlist %}            
-            <li class="optionbox">
-                <a style="text-decoration: none;" href="{% url 'locationdetail' %}?orgname={{obj.name}}">
-                <h2 style="font-size: small;">{{obj.name}}</h2>
-                <h3 style="font-size: x-small">{{obj.desc}}</h3>
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-{% else %}
-    <h1 style="font-size: medium;">No available locations for chosen game and date combination.</h1>
-{% endif %}
-<a href="{% url 'home' %}" class="btn btn-outline-primary">Go back</a>
+  {% if objlist %}
+  <h1 style="font-size: medium">
+    Available locations for {{game}} in {{area}}:
+  </h1>
+  <div class="locations">
+    <ul>
+      {% for obj in objlist %}
+      <li>
+        <a
+          style="text-decoration: none"
+          href="{% url 'locationdetail' %}?orgname={{obj.name}}"
+        >
+          <div class="optionbox">
+            <h2 style="font-size: small">{{obj.name}}</h2>
+            <h3 style="font-size: x-small">{{obj.desc}}</h3>
+          </div>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% else %}
+  <h1 style="font-size: medium">
+    No available locations for chosen game and date combination.
+  </h1>
+  {% endif %}
+  <a href="{% url 'home' %}" class="btn btn-outline-primary">Go back</a>
 </div>
 {% endblock %}

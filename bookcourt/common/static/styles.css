@@ -12,7 +12,7 @@
     src: url(https://fonts.gstatic.com/s/vinasans/v4/m8JQjfZKf6-d2273MP7Dd5RA.woff2) format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
-body::-webkit-scrollbar {
+/* body::-webkit-scrollbar {
     width: 0.25rem;
 }
 
@@ -22,7 +22,7 @@ body::-webkit-scrollbar-track {
 
 body::-webkit-scrollbar-thumb {
     background: #6649b8;
-}
+} */
 .topheader{
     display: flex;
     position: absolute;
@@ -80,6 +80,7 @@ body::-webkit-scrollbar-thumb {
     font-weight: 300;
     font-size: large;
     z-index: 100;
+    overflow: hidden;
 }
 .loginoptions span i{
     margin-right: 1rem;
@@ -125,6 +126,31 @@ body::-webkit-scrollbar-thumb {
     align-items: center;
     justify-content: center;
     font-size: small;
+}
+input{
+    background: none;
+    border: none;
+    border-bottom: 2px solid black;
+    transition: 300ms;
+}
+input:focus{
+    outline: none;
+    border-bottom: 2px solid grey ;
+    scale: 1.05;
+}
+select{
+    background: none;
+    border: none;
+    border-bottom: 2px solid black;
+    transition: 300ms;
+}
+select:focus{
+    outline: none;
+    border-bottom: 2px solid grey;
+    scale: 1.05;
+}
+option{
+    background: #00b4d8;
 }
 .home{
     display: flex;
@@ -193,16 +219,19 @@ ul {
 }
 .coredetails{
     display: flex;
-    position: absolute;
-    left: 10%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-right: 10rem;
+}
+.noncoredetails{
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
-.noncoredetails{
+.amenities{
     display: flex;
-    position: absolute;
-    right: 15%;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -210,9 +239,17 @@ ul {
 .optionbox{
     margin: auto;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    border: 2px solid burlywood;
+    background: #0077b6;
+    box-shadow: 0 4px 8px 0 #7de5fa;
+    border-radius: 5px;
+    transition: 0.2s;
+    color: black;
+}
+.optionbox:hover{
+    scale: 1.02;
 }
 .locationdetail > .btn.btn-outline-primary{
     position: absolute;
@@ -228,6 +265,7 @@ ul {
     color: black;
     background-color: #0077b6;
     border-radius: 15px;
+    outline: none;
 }
 .btn.btn-outline-primary:hover{
     background-size:100%;
